@@ -1,0 +1,87 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8" http-equiv="Access-Control-Allow-Origin" content="*">  
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <link rel="stylesheet" href="./css/bootstrap.css">
+    <link rel="stylesheet" href="./css/index.css">
+    <script src="./js/jquery.min.js"></script>
+    <script src="./js/data.js"></script>   
+    <script src="./js/index.js"></script>
+    <script src="./js/analyze.js"></script>
+    
+
+    <title>itracking</title>
+</head>
+<body>
+    <!--摄像机-->
+     <div class="top" >
+            <video id="video" width="100" height="80"></video>
+            <canvas id='canvas' width='100' height='80' hidden=> </canvas>
+            <img id='testImg' src='' hidden="">
+      </div>
+    <!--开始页面-->
+    <div id = "personalInfo" class = "wapper" >
+        <div class = "logo">
+            <image src = "./images/logo.png"></image>
+        </div>
+        <div class = "title">Basic Information About Your Baby</div>
+        <div class = "gender">
+            <image class = "boy" src = "./images/boy.png"></image>
+            <image class="girl" src = "./images/girl.png"></image>
+        </div>
+        <div class = "age">
+            <label for ="years">Years&nbsp;&nbsp;</label><input type="text" name="years" onkeyup="value=value.replace(/[^\d{0,6}]/g,'')" />&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+            <label for = "month">Months&nbsp;&nbsp;</label><input type="text" name="month" onkeyup="value=value.replace(/[^\d{0,11}]/g,'')">
+        </div>
+        <div class = "personalInfoCom"><button class="comBtn" name = "PerComBtn">Comfirm</button></div>
+    </div>
+
+    <!--准备界面-->
+    <div id="ready" class ="wapper" style="display: none;">
+       
+        <div class = "logo">
+            <image src = "./images/logo.png"></image>
+        </div>
+        <div class="icon">
+            <image src = "./images/ready.png"></image>
+        </div>
+        <div class = "testInfor">
+            <div class="mainInfo">The test is going to begin</div>
+            <div class = "subInfo">Please allow us to use the camera.</div>
+        </div>
+        <div class = "testInforCom">
+            <label for="testComBtn" >Can't open the camera?</label>
+            <button class="comBtn" name="testComBtn">Begin</button>
+        </div>
+    </div>
+
+    <!--问题页面-->
+    <div id="Question" style="display: none;" class="wapper">
+        Which one is the Apple?
+    </div>
+    <!--答案页面-->
+    <div id="Answer" style="display: none;" class="wapper">
+            <div id="Choice1" style="border-right: 1px gray solid; border-bottom: 1px gray solid"><div class="eye"></div><img src="./images/data/ant.jpg"></div>
+            <div id="Choice2" style="border-bottom: 1px gray solid"><div class="eye"></div><img src="./images/data/apple.jpg"></div>
+            <div id="Choice3" style="border-right: 1px gray solid"><div class="eye"></div><img src="./images/data/archery.jpg"></div>
+            <div id="Choice4" ><div class="eye"></div><img src="./images/data/astronaut.jpg"></div>
+    </div>
+
+    <!--分数页面-->
+    <div id = "score" style="display: none;" class="wapper">
+        <div class = "logo">
+            <image src = "./images/logo.png"></image>
+        </div>
+        <div class="icon">
+            <image src = "./images/finished.png"></image>
+        </div>
+        <div class = "testInfor">
+            <div class="mainInfo">Congratulation!</br>You have finished the test!</div>
+            <div class = "bigInfo">99</div>
+        </div>
+    </div>
+
+</body>
+</html>

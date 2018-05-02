@@ -1,0 +1,180 @@
+
+.top{
+    position: absolute;
+    top: 0px;
+    left: 0px;
+}
+
+.wapper{
+
+    width: 100%;
+}
+
+.logo{
+
+    width: 100%;
+    height: 80px;
+}
+
+.logo img{
+
+    float: right;
+    height: 80px;
+    width:144px;
+}
+
+.title{
+    height: 150px;
+    font-family: PingFang SC, Arial;
+    font-size: 30px;
+    text-align: center;
+    color: gray;
+}
+
+.gender {
+    text-align: center;
+}
+
+.gender img.boy, img.girl {
+    width:120px;
+    height: 90px;
+    margin:0 20px;
+    opacity:0.50;
+    filter:alpha(opacity=50);
+    -ms-filter: "alpha( opacity=50 )";
+    -moz-opacity:0.50;
+}
+
+.gender img.boy:hover, img.girl:hover{
+
+    opacity:1;
+    filter:alpha(opacity=100);
+    -ms-filter: "alpha( opacity=100 )";
+    -moz-opacity:1;
+}
+
+.age {
+    margin:50px auto;
+    width:360px;
+}
+
+.age input{
+    width:100px;
+    text-indent: 10px;
+}
+
+.personalInfoCom{
+    align-items: center;
+}
+
+button.comBtn{
+    margin: 0 auto;
+    display:block;
+    width: 180px;
+    height: 40px;
+    background-color: #fdde4b;
+    border-radius: 10px;
+    border-width: 0px;
+    color: gray;
+    margin-top: 10px;
+}
+
+button.comBtn:hover{
+    background-color: #d7bc3e;
+    color: #2f2826;
+
+}
+
+
+.icon{
+    margin: 30px auto;
+    text-align: center;
+}
+
+ .icon img{
+    width:120px;
+}
+
+.testInfor .mainInfo {
+    font-size: 30px;
+    text-align: center;
+    color: gray;
+}
+
+.testInfor .subInfo{
+    font-size: 18px;
+    text-align: center;
+    color: #6e6c6c;
+    margin: 30px;
+}
+.testInfor .bigInfo {
+    font-size: 48px;
+    text-align: center;
+    color: #6e6c6c;
+    margin: 30px;
+    font-weight: bold;
+}
+
+.testInforCom label{
+    font-size: 16px;
+    margin: 0 auto;
+    display:block;
+    width: 170px;
+    color: #6e6c6c;
+}
+
+.testInforCom {
+    margin-top: 80px; 
+}
+
+#Question{
+    width: 100%;
+    text-align:center;
+    vertical-align: center;
+    position: absolute;
+    height: 50%;
+    top: 40%;
+    font-size: 30px;
+    color: gray;
+    right: 0;
+    z-index: 9
+}
+
+#Answer{
+    position: absolute;
+    height: 80%;
+    width: 70%;
+    right: 15%;
+    z-index: 9;
+    top: 10%;
+}
+
+#Answer div{
+    display: block;
+    float: left;
+    width: 50%;
+    height: 50%;
+    text-align: center;
+    vertical-align: middle;
+    position: relative;
+}
+
+#Answer div img:hover{
+     height: 100%;
+}
+
+#Answer div img{
+    height: 80%;
+}
+
+#Answer .eye{
+    position: absolute;
+    top: 0;
+    left: 0;
+    height: 30px;
+    width: 50px;
+    background-image: url("../images/eye.jpg");
+    background-size: 50px 30px;
+    display: none;
+}
+

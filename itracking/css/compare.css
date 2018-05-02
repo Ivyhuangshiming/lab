@@ -1,0 +1,61 @@
+
+html{
+    width:100%;
+}
+body{
+    width:100%;
+}
+.box{
+    width:100%;
+    position: relative;
+    top:80px;
+    border:1px solid #fff;
+}
+.imgWrapper{
+    width: 150px;
+    position: absolute;
+    top:10px;
+    text-align: center;
+    padding-top:10px;
+}
+input[type="file"] {
+    width:100%;
+}
+img{
+    width:100%;
+}
+.left{
+    width:50%;
+    float: left;
+    padding:20px;
+}
+.right{
+    width:50%;
+    float: left;
+    border-left:1px solid #ccc;
+    padding:20px;
+}
+
+#imgUpload{
+    margin-top: 200px;
+}
+#imgCompare{
+    margin-top: 200px;
+}
+.compareBtnWraaper{
+    text-align: center;
+}
+.result{
+    text-align: center;
+}
+#resultRate{
+    height:100px;
+    font-size: 40px;
+    font-weight: 800;
+}
+#result{
+    font-size: 36px;
+    color:red;
+    height:75px;
+}
+
