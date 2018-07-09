@@ -1,0 +1,51 @@
+<!DOCTYPE html>
+<html lang="en">
+	<head>
+		<meta charset="UTF-8">
+		<title>Cat!Chi</title>
+		<style type="text/css">
+			body {
+				padding-top: 10px;
+			}
+			.all_bg{
+				width:720px;
+				height: 1280px;
+				margin: 0 auto;
+			}
+			#allcanvas {
+				position: relative;
+				width: 720px;
+				height: 1280px;
+				margin: 0
+			}
+			#canvas1 {
+				position: absolute;
+				bottom: 0;
+				left:0;
+				z-index: 1;
+			}
+			#canvas2 {
+				position: absolute;
+				bottom: 0;
+				left:0;
+				z-index: 0;
+			}
+		</style>
+	</head>
+	<body>
+		<div class="all_bg">
+			<div id="allcanvas">
+				<canvas id="canvas1" width="720" height="1280" ></canvas>
+				<canvas id="canvas2" width="720" height="1280" ></canvas>
+			</div>
+		</div>
+		<script type="text/javascript" src="js/main.js"></script>
+		<script type="text/javascript" src="js/commonFunction.js"></script>
+		<script type="text/javascript" src="js/background.js"></script>
+		<script type="text/javascript" src="js/launch.js"></script>
+		<script type="text/javascript" src="js/ball.js"></script>
+		<script type="text/javascript" src="js/box.js"></script>
+		<script type="text/javascript" src="js/collision.js"></script>
+		<script type="text/javascript" src="js/data.js"></script>
+	</body>
+</html>
