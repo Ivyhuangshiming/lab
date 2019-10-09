@@ -1,0 +1,90 @@
+*,
+*::before,
+*::after {
+  box-sizing: border-box;
+}
+.container {
+  position: relative;
+  height: 100vh;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-around;
+  background-image: radial-gradient(#c5e5fc, #3c5a89);
+}
+.candy-container {
+  display: flex;
+  flex-wrap: wrap;
+}
+.candy {
+  position: relative;
+  top: 0;
+  flex: 0 0 20%;
+  height: 120px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  transition: top 0.6s ease-in-out;
+  visibility: hidden;
+}
+.candy.visible {
+  visibility: visible;
+}
+svg {
+  width: 100px;
+}
+.credit {
+  font-size: 11px;
+  text-align: center;
+}
+.hand {
+  position: fixed;
+  top: 100%;
+  left: 45px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  transition: top 0.5s ease-in-out;
+}
+.hand.grab .open {
+  display: none;
+}
+.hand.grab .fist {
+  display: block;
+}
+.arm {
+  position: relative;
+  top: -10px;
+  left: 4px;
+  width: 46px;
+  height: 100vh;
+  background: #FDC794;
+}
+.fist {
+  display: none;
+}
+.no-more-candies {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  display: none;
+  font-family: 'Kirang Haerang', cursive;
+  font-size: 50px;
+  text-align: center;
+  color: rebeccapurple;
+}
+.credit {
+  color: #444;
+}
+.credit a {
+  color: #666;
+}
+@media screen and (max-width: 500px) {
+  .candy svg {
+    width: 65px;
+  }
+}

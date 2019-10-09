@@ -1,0 +1,244 @@
+﻿<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>e-learning demo</title>
+
+    <link rel="stylesheet" href="css/style.css">
+
+<script type="text/javascript" src="js/jquery-1.8.3.min.js"></script>
+<script type="text/javascript">
+  $(document).ready(function() {
+    var times = 60 * 25; // 15 秒
+    countTime = setInterval(function() {
+      times = --times < 0 ? 0 : times;
+      var ms = Math.floor(times / 100).toString();
+
+      if(ms.length <= 1) {
+        ms = "0" + ms;
+      }
+      var hm = Math.floor(times % 100).toString();
+      if(hm.length <= 1) {
+        hm = "0" + hm;
+      }
+      if(times == 0) {
+        exportRaw('your answer.txt',"你得了多少分，錯隊的分析情況等等等等");
+        alert("游戏结束");
+        
+        clearInterval(countTime);
+      }
+      // 获取分钟、毫秒数
+      $(".a").html(ms);
+      $(".b").html(hm);
+    }, 10);
+  });
+
+  function fakeClick(obj) {
+   var ev = document.createEvent("MouseEvents");
+   ev.initMouseEvent("click", true, false, window, 0, 0, 0, 0, 0, false, false, false, false, 0, null);
+   obj.dispatchEvent(ev);
+}
+
+function exportRaw(name, data) {
+     var urlObject = window.URL || window.webkitURL || window;
+     var export_blob = new Blob([data]);
+     var save_link = document.createElementNS("http://www.w3.org/1999/xhtml", "a")
+     save_link.href = urlObject.createObjectURL(export_blob);
+     save_link.download = name;
+     fakeClick(save_link);
+   } 
+   
+   
+
+</script>
+<style>
+  .warp{
+    width: 100%;
+    height: 60px;
+    line-height:60px;
+    text-align: center;
+    font-size: 40px;
+    font-family: "微软雅黑";
+    margin-top: :0px;
+    margin-bottom:0px;
+    float: 0px;
+  }
+  .warp strong{
+    width: 100px;
+    display: inline-block;
+    text-align: center;
+    font-family: georgia;
+    color: #C9302C;
+  }
+</style>
+
+</head>
+<body>
+
+    <div class="container">
+      <div class="warp" style="font-size: 20px">請在倒計時結束前找到所有正確的陳述！
+      <strong class="a">111</strong>秒 <strong class="b"></strong>毫秒
+    </div>
+        <div class="candy-container">
+            <div class="candy">
+              1. <img src="images/painter1.png"></img>
+            </div>
+            <div class="candy">
+              2. <img src="images/painter1.png"></img>
+            </div>
+            <div class="candy">
+              3. <img src="images/painter1.png"></img>
+            </div>
+            <div class="candy">
+              4. <img src="images/painter1.png"></img>
+            </div>
+            <div class="candy">
+              5. <img src="images/painter1.png"></img>
+            </div>
+            <div class="candy">
+              6. <img src="images/painter1.png"></img>
+            </div>
+            <div class="candy">
+              7. <img src="images/painter1.png"></img>
+            </div>
+            <div class="candy">
+              8. <img src="images/painter1.png"></img>
+            </div>
+            <div class="candy">
+              9. <img src="images/painter1.png"></img>
+            </div>
+            <div class="candy">
+              10. <img src="images/painter1.png"></img>
+            </div>
+            <div class="candy">
+              11. <img src="images/painter1.png"></img>
+            </div>
+            <div class="candy">
+             12. <img src="images/painter1.png"></img>
+            </div>
+            <div class="candy">
+              13.  <img src="images/painter1.png"></img>
+            </div>
+            <div class="candy">
+              14. <img src="images/painter1.png"></img>
+            </div>
+            <div class="candy">
+               15. <img src="images/painter1.png"></img>
+            </div>
+            <div class="candy">
+              16. <img src="images/painter1.png"></img>
+            </div>
+            <div class="candy">
+              17. <img src="images/painter1.png"></img>
+            </div>
+            <div class="candy">
+              18. <img src="images/painter1.png"></img>
+            </div>
+            <div class="candy">
+              19. <img src="images/painter1.png"></img>
+            </div>
+            <div class="candy">
+              20. <img src="images/painter1.png"></img>
+            </div>
+        </div>
+       
+       
+    </div>
+    <div class="hand">
+        <div class="palm">
+            <svg class="open" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" version="1.1" id="Layer_1" x="0px" y="0px" viewBox="0 0 512.044 512.044" style="enable-background:new 0 0 512.044 512.044;" xml:space="preserve">
+<path style="fill:#FDC794;" d="M154.469,264.872l-11.476-11.476c-7.062-7.062-14.124-15.007-20.303-22.069  c-20.303-23.834-56.497-34.428-81.214-24.717c-4.414,0.883-7.062,3.531-10.593,5.297c-10.593,7.062-8.828,15.007-8.828,17.655  s50.317,53.848,79.448,105.931c0,0,25.6,42.372,52.966,70.621l16.772,50.317c10.593,33.545,42.372,55.614,76.8,55.614h74.152  c34.428,0,69.738-29.131,77.683-62.676c1.766-7.945,5.297-19.421,10.593-25.6c7.945-8.828,17.655-30.897,17.655-61.793v-28.248  c0-22.069,4.414-43.255,14.124-63.559l44.138-93.572c9.71-20.303,0-45.903-24.717-48.552c-10.593-0.883-25.6,6.179-39.724,25.6  l-55.614,84.745l41.49-149.186c4.414-15.007-0.883-30.897-14.124-38.841c-5.297-4.414-11.476-6.179-18.538-6.179  c-19.421,0-30.897,21.186-35.31,35.31L295.71,211.906V35.355c0-18.538-14.124-34.428-32.662-35.31  c-20.303-0.883-37.959,11.476-37.959,35.31v194.207L180.952,73.313c-7.062-25.6-15.89-37.959-35.31-37.959  c-15.007,0-28.248,8.828-33.545,22.952c-1.766,6.179-1.766,12.359,0,19.421L154.469,264.872" />
+<g>
+            <path style="fill:#F9A671;" d="M198.607,441.424c-1.766,0-3.531-0.883-5.297-1.766c-5.297-4.414-9.71-7.062-15.007-11.476   c-7.062-4.414-13.241-9.71-20.303-15.89c-3.531-3.531-3.531-8.828-0.883-12.359c3.531-3.531,8.828-3.531,12.359-0.883   c6.179,5.297,12.359,9.71,18.538,14.124c5.297,3.531,10.593,7.062,15.89,12.359c3.531,3.531,4.414,8.828,0.883,12.359   C203.903,440.541,201.255,441.424,198.607,441.424z" />
+            <path style="fill:#F9A671;" d="M366.331,450.251c-2.648,0-5.297-1.766-7.062-3.531c-2.648-4.414-1.766-9.71,2.648-12.359   c5.297-3.531,11.476-6.179,17.655-7.945c6.179-2.648,13.241-4.414,15.89-7.945c3.531-3.531,8.828-3.531,12.359,0   c3.531,3.531,3.531,8.828,0,12.359c-6.179,6.179-15.007,9.71-22.952,12.359c-5.297,1.766-10.593,3.531-13.241,6.179   C369.862,449.368,368.096,450.251,366.331,450.251z" />
+            <path style="fill:#F9A671;" d="M163.296,291.355c-3.531,0-6.179-1.766-7.945-5.297l-8.828-17.655c-1.766-4.414,0-9.71,3.531-11.476   c4.414-1.766,9.71,0,11.476,3.531l8.828,17.655c1.766,4.414,0,9.71-3.531,11.476C165.945,291.355,165.062,291.355,163.296,291.355z   " />
+            <path style="fill:#F9A671;" d="M295.71,256.044c-5.297,0-8.828-3.531-8.828-8.828v-35.31c0-5.297,3.531-8.828,8.828-8.828   c5.297,0,8.828,3.531,8.828,8.828v35.31C304.538,252.513,301.007,256.044,295.71,256.044z" />
+            <path style="fill:#F9A671;" d="M225.09,256.044c-5.297,0-8.828-3.531-8.828-8.828v-26.483c0-5.297,3.531-8.828,8.828-8.828   s8.828,3.531,8.828,8.828v26.483C233.917,252.513,230.386,256.044,225.09,256.044z" />
+            <path style="fill:#F9A671;" d="M357.503,264.872c-0.883,0-1.766,0-2.648-0.883c-4.414-1.766-7.062-6.179-5.297-11.476l8.828-26.483   c1.766-4.414,6.179-7.062,11.476-5.297c4.414,1.766,7.062,6.179,5.297,11.476l-8.828,26.483   C364.565,262.224,361.034,264.872,357.503,264.872z" />
+</g>
+<g>
+</g>
+<g>
+</g>
+<g>
+</g>
+<g>
+</g>
+<g>
+</g>
+<g>
+</g>
+<g>
+</g>
+<g>
+</g>
+<g>
+</g>
+<g>
+</g>
+<g>
+</g>
+<g>
+</g>
+<g>
+</g>
+<g>
+</g>
+<g>
+</g>
+</svg>
+            <svg class="fist" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" version="1.1" id="Layer_1" x="0px" y="0px" viewBox="0 0 512 512" style="enable-background:new 0 0 512 512;" xml:space="preserve">
+<path style="fill:#FDC794;" d="M429.794,282.483V105.931c0-19.421-15.89-35.31-35.31-35.31c-19.421,0-35.31,15.89-35.31,35.31  V61.793c0-19.421-15.89-35.31-35.31-35.31c-19.421,0-35.31,15.89-35.31,35.31V35.31c0-19.421-15.89-35.31-35.31-35.31  s-35.31,15.89-35.31,35.31v17.655c0-19.421-15.89-35.31-35.31-35.31s-35.31,15.89-35.31,35.31v72.386  c-12.359-30.014-75.034-39.724-60.91,19.421c9.71,41.49,0,98.869-3.531,136.828c-8.828,110.345,73.269,150.952,73.269,150.952l0,0  v77.683L394.484,512v-79.448l0,0C428.029,387.531,429.794,386.648,429.794,282.483" />
+<g>
+            <path style="fill:#F9A671;" d="M297.38,441.379h-35.31c-5.297,0-8.828-3.531-8.828-8.828s3.531-8.828,8.828-8.828h35.31   c5.297,0,8.828,3.531,8.828,8.828S302.677,441.379,297.38,441.379z" />
+            <path style="fill:#F9A671;" d="M306.208,476.69h-52.083c-5.297,0-8.828-3.531-8.828-8.828s3.531-8.828,8.828-8.828h52.083   c5.297,0,8.828,3.531,8.828,8.828S311.504,476.69,306.208,476.69z" />
+            <path style="fill:#F9A671;" d="M288.553,176.552c-5.297,0-8.828-3.531-8.828-8.828V52.966c0-5.297,3.531-8.828,8.828-8.828   s8.828,3.531,8.828,8.828v114.759C297.38,173.021,293.849,176.552,288.553,176.552z" />
+            <path style="fill:#F9A671;" d="M217.932,176.552c-5.297,0-8.828-3.531-8.828-8.828V52.966c0-5.297,3.531-8.828,8.828-8.828   c5.297,0,8.828,3.531,8.828,8.828v114.759C226.76,173.021,223.229,176.552,217.932,176.552z" />
+            <path style="fill:#F9A671;" d="M147.311,203.034c-5.297,0-8.828-3.531-8.828-8.828v-70.621c0-5.297,3.531-8.828,8.828-8.828   s8.828,3.531,8.828,8.828v70.621C156.139,199.503,152.608,203.034,147.311,203.034z" />
+            <path style="fill:#F9A671;" d="M359.173,203.034c-5.297,0-8.828-3.531-8.828-8.828v-88.276c0-5.297,3.531-8.828,8.828-8.828   c5.297,0,8.828,3.531,8.828,8.828v88.276C368.001,199.503,364.47,203.034,359.173,203.034z" />
+</g>
+<g>
+</g>
+<g>
+</g>
+<g>
+</g>
+<g>
+</g>
+<g>
+</g>
+<g>
+</g>
+<g>
+</g>
+<g>
+</g>
+<g>
+</g>
+<g>
+</g>
+<g>
+</g>
+<g>
+</g>
+<g>
+</g>
+<g>
+</g>
+<g>
+</g>
+</svg>
+        </div>
+        <div class="arm"></div>
+    </div>
+    <script src='js/react.production.min.js'></script>
+    <script src='js/react-dom.production.min.js'></script>
+    <script src='js/styled-components.min.js'></script>
+
+    <script src="js/index.js"></script>
+
+    <!--这行代码可以删除-->
+    <a style="display:none" href="http://www.bootstrapmb.com">bootstrap模板库</a>
+
+</body>
+</html>
