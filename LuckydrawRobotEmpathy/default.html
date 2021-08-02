@@ -206,7 +206,7 @@
     function getRandomString() {
       var randomno = Math.floor(Math.random() * (list.length + 1)) ;
       var winner = list[randomno]
-      if(winner !="" && winner !=null)
+      if(winner !="" || winner !=null)
       {
         list[randomno] = "";
         return winner;
