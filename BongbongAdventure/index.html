@@ -1,0 +1,1576 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>绘本故事游戏</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Microsoft YaHei', Arial, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            height: 100vh;
+            overflow: hidden;
+        }
+
+        .container {
+            width: 100%;
+            height: 100vh;
+            position: relative;
+        }
+
+        /* 登录界面 */
+        .login-screen {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            z-index: 1000;
+        }
+
+        .login-box {
+            background: white;
+            padding: 40px;
+            border-radius: 20px;
+            box-shadow: 0 20px 40px rgba(0,0,0,0.1);
+            text-align: center;
+            min-width: 350px;
+        }
+
+        .login-title {
+            font-size: 28px;
+            color: #333;
+            margin-bottom: 30px;
+            font-weight: bold;
+        }
+
+        .input-group {
+            margin-bottom: 20px;
+            text-align: left;
+        }
+
+        .input-group label {
+            display: block;
+            margin-bottom: 8px;
+            color: #555;
+            font-weight: 500;
+        }
+
+        .input-group input {
+            width: 100%;
+            padding: 12px 15px;
+            border: 2px solid #e1e5e9;
+            border-radius: 10px;
+            font-size: 16px;
+            transition: border-color 0.3s;
+        }
+
+        .input-group input:focus {
+            outline: none;
+            border-color: #667eea;
+        }
+
+        .login-btn {
+            width: 100%;
+            padding: 15px;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            border: none;
+            border-radius: 10px;
+            font-size: 18px;
+            font-weight: bold;
+            cursor: pointer;
+            transition: transform 0.2s;
+        }
+
+        .login-btn:hover {
+            transform: translateY(-2px);
+        }
+
+        /* Prestory 故事背景界面 */
+        .prestory-screen {
+            display: none;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(135deg, #2c3e50 0%, #3498db 100%);
+            position: relative;
+        }
+
+        .prestory-header {
+            background: rgba(255, 255, 255, 0.95);
+            padding: 15px 30px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .prestory-title {
+            font-size: 24px;
+            color: #333;
+            font-weight: bold;
+        }
+
+        .skip-prestory-btn {
+            background: #e74c3c;
+            color: white;
+            border: none;
+            padding: 10px 20px;
+            border-radius: 8px;
+            cursor: pointer;
+            font-size: 14px;
+            transition: all 0.2s;
+        }
+
+        .skip-prestory-btn:hover {
+            background: #c0392b;
+            transform: translateY(-2px);
+        }
+
+        .prestory-content {
+            height: calc(100vh - 80px);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 20px;
+        }
+
+        .prestory-page {
+            max-width: 800px;
+            max-height: 600px;
+            width: 100%;
+            background: white;
+            border-radius: 15px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.1);
+            position: relative;
+            overflow: hidden;
+        }
+
+        .prestory-image {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            border-radius: 15px;
+        }
+
+        .prestory-controls {
+            position: absolute;
+            bottom: 20px;
+            left: 50%;
+            transform: translateX(-50%);
+            display: flex;
+            gap: 15px;
+            background: rgba(255,255,255,0.9);
+            padding: 10px 20px;
+            border-radius: 25px;
+            backdrop-filter: blur(10px);
+            align-items: center;
+        }
+
+        .prestory-progress {
+            background: rgba(52, 152, 219, 0.7);
+            color: white;
+            padding: 5px 15px;
+            border-radius: 15px;
+            font-size: 14px;
+        }
+
+        /* 主界面 */
+        .main-screen {
+            display: none;
+            width: 100%;
+            height: 100%;
+            padding: 20px;
+        }
+
+        .main-header {
+            text-align: center;
+            margin-bottom: 40px;
+        }
+
+        .main-title {
+            font-size: 36px;
+            color: white;
+            text-shadow: 2px 2px 4px rgba(0,0,0,0.3);
+            margin-bottom: 10px;
+        }
+
+        .user-info {
+            color: rgba(255,255,255,0.9);
+            font-size: 18px;
+        }
+
+        .eras-container {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 30px;
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 0 20px;
+        }
+
+        .era-card {
+            background: white;
+            border-radius: 20px;
+            padding: 30px 20px;
+            text-align: center;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.1);
+            position: relative;
+            overflow: hidden;
+        }
+
+        .era-card:hover {
+            transform: translateY(-10px);
+            box-shadow: 0 20px 40px rgba(0,0,0,0.2);
+        }
+
+        .era-card.locked {
+            opacity: 0.6;
+            cursor: not-allowed;
+        }
+
+        .era-card.locked:hover {
+            transform: none;
+        }
+
+        .era-icon {
+            font-size: 48px;
+            margin-bottom: 15px;
+            display: block;
+        }
+
+        .era-title {
+            font-size: 22px;
+            font-weight: bold;
+            color: #333;
+            margin-bottom: 10px;
+        }
+
+        .era-progress {
+            color: #666;
+            font-size: 14px;
+            margin-bottom: 15px;
+        }
+
+        .era-progress-bar {
+            width: 100%;
+            height: 8px;
+            background: #f0f0f0;
+            border-radius: 4px;
+            overflow: hidden;
+            margin-bottom: 15px;
+        }
+
+        .era-progress-fill {
+            height: 100%;
+            background: linear-gradient(90deg, #667eea 0%, #764ba2 100%);
+            border-radius: 4px;
+            transition: width 0.5s ease;
+        }
+
+        .era-status {
+            font-size: 12px;
+            padding: 5px 12px;
+            border-radius: 15px;
+            display: inline-block;
+        }
+
+        .era-status.completed {
+            background: #e8f5e8;
+            color: #4caf50;
+        }
+
+        .era-status.current {
+            background: #e3f2fd;
+            color: #2196f3;
+        }
+
+        .era-status.locked {
+            background: #f5f5f5;
+            color: #999;
+        }
+
+        .lock-icon {
+            position: absolute;
+            top: 15px;
+            right: 15px;
+            font-size: 20px;
+            color: #ccc;
+        }
+
+        /* 绘本界面 */
+        .storybook-screen {
+            display: none;
+            width: 100%;
+            height: 100%;
+            background: #f8f9fa;
+            position: relative;
+        }
+
+        .storybook-header {
+            background: white;
+            padding: 15px 30px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .back-btn {
+            background: #667eea;
+            color: white;
+            border: none;
+            padding: 10px 20px;
+            border-radius: 8px;
+            cursor: pointer;
+            font-size: 16px;
+        }
+
+        .storybook-info {
+            text-align: center;
+            flex: 1;
+            margin: 0 20px;
+        }
+
+        .storybook-title {
+            font-size: 24px;
+            color: #333;
+            margin-bottom: 5px;
+        }
+
+        .storybook-day {
+            color: #666;
+            font-size: 16px;
+        }
+
+        .storybook-content {
+            height: calc(100vh - 80px);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 20px;
+        }
+
+        .storybook-page {
+            max-width: 800px;
+            max-height: 600px;
+            width: 100%;
+            background: white;
+            border-radius: 15px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.1);
+            position: relative;
+            overflow: hidden;
+        }
+
+        .page-image {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            border-radius: 15px;
+        }
+
+        .control-btn {
+            background: #667eea;
+            color: white;
+            border: none;
+            padding: 10px 15px;
+            border-radius: 50%;
+            cursor: pointer;
+            font-size: 16px;
+            transition: all 0.2s;
+        }
+
+        .control-btn:hover {
+            background: #5a67d8;
+            transform: scale(1.1);
+        }
+
+        .control-btn:disabled {
+            background: #ccc;
+            cursor: not-allowed;
+        }
+
+        .page-indicator {
+            background: rgba(0,0,0,0.7);
+            color: white;
+            padding: 5px 15px;
+            border-radius: 15px;
+            font-size: 14px;
+        }
+
+        /* 游戏界面预留 */
+        .game-screen {
+            display: none;
+            width: 100%;
+            height: 100%;
+            background: #f0f2f5;
+        }
+
+        /* 工具函数 */
+        .hidden {
+            display: none !important;
+        }
+
+        .fade-in {
+            animation: fadeIn 0.5s ease-in;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(20px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        /* 响应式设计 */
+        @media (max-width: 768px) {
+            .eras-container {
+                grid-template-columns: 1fr;
+                gap: 20px;
+            }
+            
+            .main-title {
+                font-size: 28px;
+            }
+            
+            .era-card {
+                padding: 20px 15px;
+            }
+        }
+
+        /* 新增：游戏按钮样式 */
+        .game-trigger-btn {
+            background: #fd79a8;
+            color: white;
+            border: none;
+            padding: 10px 15px;
+            border-radius: 20px;
+            cursor: pointer;
+            font-size: 14px;
+            font-weight: bold;
+            transition: all 0.3s;
+            animation: gameButtonPulse 2s ease-in-out infinite;
+        }
+
+        .game-trigger-btn:hover {
+            background: #e84393;
+            transform: scale(1.05);
+        }
+
+        .game-trigger-btn:disabled {
+            background: #ddd;
+            color: #999;
+            cursor: not-allowed;
+            animation: none;
+        }
+
+        @keyframes gameButtonPulse {
+            0%, 100% { transform: scale(1); }
+            50% { transform: scale(1.05); }
+        }
+
+        /* 新增：音频状态指示样式 */
+        .audio-status {
+            display: flex;
+            align-items: center;
+            gap: 5px;
+            font-size: 12px;
+            color: #666;
+        }
+
+        .audio-loading {
+            color: #74b9ff;
+        }
+
+        .audio-playing {
+            color: #00b894;
+        }
+
+        .audio-finished {
+            color: #636e72;
+        }
+
+        /* 修改：页面控制区域样式 */
+        .page-controls {
+            position: absolute;
+            bottom: 20px;
+            left: 50%;
+            transform: translateX(-50%);
+            display: flex;
+            gap: 15px;
+            background: rgba(255,255,255,0.9);
+            padding: 10px 20px;
+            border-radius: 25px;
+            backdrop-filter: blur(10px);
+            align-items: center;
+        }
+
+        /* Prestory完成提示 */
+        .prestory-complete-panel {
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: rgba(0, 0, 0, 0.8);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            z-index: 1000;
+        }
+
+        .prestory-complete-content {
+            background: white;
+            padding: 50px;
+            border-radius: 20px;
+            text-align: center;
+            max-width: 500px;
+            animation: completeAppear 0.8s ease-out;
+        }
+
+        .prestory-complete-content h2 {
+            color: #2d3436;
+            margin-bottom: 20px;
+            font-size: 28px;
+        }
+
+        .prestory-complete-content p {
+            color: #636e72;
+            font-size: 16px;
+            margin-bottom: 30px;
+            line-height: 1.5;
+        }
+
+        .enter-eras-btn {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            border: none;
+            padding: 15px 30px;
+            border-radius: 25px;
+            font-size: 18px;
+            font-weight: bold;
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+
+        .enter-eras-btn:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 10px 20px rgba(102, 126, 234, 0.3);
+        }
+
+        @keyframes completeAppear {
+            0% { 
+                opacity: 0;
+                transform: scale(0.5) translateY(-50px);
+            }
+            100% { 
+                opacity: 1;
+                transform: scale(1) translateY(0);
+            }
+        }
+    </style>
+    <!-- 引入游戏组件 -->
+    <script src="js/whack-mole-game.js"></script>
+    <script src="js/components.js"></script>
+    <script src="js/data.js"></script>
+    <script src="js/utils.js"></script>
+</head>
+<body>
+    <div class="container">
+        <!-- 登录界面 -->
+        <div class="login-screen" id="loginScreen">
+            <div class="login-box">
+                <h1 class="login-title">🏛️ 蹦蹦時光穿梭記</h1>
+                <form id="loginForm">
+                    <div class="input-group">
+                        <label for="username">用戶名</label>
+                        <input type="text" id="username" name="username" required>
+                    </div>
+                    <div class="input-group">
+                        <label for="password">密碼</label>
+                        <input type="password" id="password" name="password" required>
+                    </div>
+                    <button type="submit" class="login-btn">開始冒險</button>
+                </form>
+            </div>
+        </div>
+
+        <!-- Prestory 故事背景界面 -->
+        <div class="prestory-screen" id="prestoryScreen">
+            <div class="prestory-header">
+                <div class="prestory-title">📜 故事背景</div>
+                <button class="skip-prestory-btn" id="skipPrestoryBtn" hidden>跳過介紹</button>
+            </div>
+            
+            <div class="prestory-content">
+                <div class="prestory-page">
+                    <img id="prestoryImage" class="prestory-image" src="" alt="故事背景">
+                    <div class="prestory-controls">
+                        <button class="control-btn" id="prestoryPrevBtn">←</button>
+                        <div class="prestory-progress">
+                            <span id="prestoryCurrentPage">1</span> / <span id="prestoryTotalPages">8</span>
+                        </div>
+                        <button class="control-btn" id="prestoryNextBtn">→</button>
+                        
+                        <!-- 游戏触发按钮 -->
+                        <button class="game-trigger-btn hidden" id="prestoryGameBtn" disabled>🎮 開始遊戲</button>
+                        
+                        <!-- 音频状态指示 -->
+                        <div class="audio-status" id="prestoryAudioStatus">
+                            <span id="prestoryAudioStatusText">準備中...</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Prestory完成面板 -->
+            <div class="prestory-complete-panel hidden" id="prestoryCompletePanel">
+                <div class="prestory-complete-content">
+                    <h2>🎉 恭喜你！</h2>
+                    <p>現在你已經了解了時光穿越的故事背景，準備好開始你的冒險了嗎？選擇一個時代，開始你的時光之旅吧！</p>
+                    <button class="enter-eras-btn" id="enterErasBtn">進入時光選擇</button>
+                </div>
+            </div>
+        </div>
+
+        <!-- 主界面 -->
+        <div class="main-screen" id="mainScreen">
+            <div class="main-header">
+                <h1 class="main-title">📚 選擇時光</h1>
+                <div class="user-info">歡迎回來，<span id="currentUser">冒險者</span>！</div>
+            </div>
+
+            <div class="eras-container" id="erasContainer">
+                <!-- 时代卡片将通过JavaScript动态生成 -->
+            </div>
+        </div>
+
+        <!-- 绘本界面 -->
+        <div class="storybook-screen" id="storybookScreen">
+            <div class="storybook-header">
+                <button class="back-btn" id="backToMain">← 返回</button>
+                <div class="storybook-info">
+                    <div class="storybook-title" id="storybookTitle">恐龍時代</div>
+                    <div class="storybook-day" id="storybookDay">第1天</div>
+                </div>
+                <div style="width: 80px;"></div> <!-- 占位符保持居中 -->
+            </div>
+            
+            <div class="storybook-content">
+                 <div class="storybook-page">
+                    <!-- ⚠️ 关键：确认这行存在 -->
+                    <img id="pageImage" class="page-image" src="" alt="故事页面">
+                    <div class="page-controls">
+                        <button class="control-btn" id="prevBtn" hidden>←</button>
+                        <div class="page-indicator">
+                            <span id="currentPage">1</span> / <span id="totalPages">10</span>
+                        </div>
+                        <button class="control-btn" id="nextBtn">→</button>
+                        
+                        <!-- 新增：游戏触发按钮 -->
+                        <button class="game-trigger-btn hidden" id="gameTriggerBtn" disabled>🎮 開始遊戲</button>
+                        
+                        <!-- 新增：音频状态指示 -->
+                        <div class="audio-status" id="audioStatus">
+                            <span id="audioStatusText">準備中...</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- 游戏界面 -->
+        <div class="game-screen" id="gameScreen">
+            <!-- 游戏内容将在后续实现 -->
+        </div>
+    </div>
+
+    <script>
+        // 全局变量
+        let currentUser = '';
+        let currentEra = null;
+        let currentDay = 1;
+        let currentPage = 1;
+        let totalPages = 0;
+        let currentAudio = null;
+        let isAudioPlaying = false;
+        let isAudioFinished = false;
+        let currentStorybookData = null;
+
+        // Prestory 相关变量
+        let prestoryCurrentPage = 1;
+        let prestoryTotalPages = 0;
+        let prestoryAudio = null;
+        let isPrestoryAudioPlaying = false;
+        let isPrestoryAudioFinished = false;
+        let prestoryData = null;
+
+        // 示例数据 - 实际应该从外部文件加载
+        const gameData = {
+            eras: [
+                {
+                    id: 'ancient',
+                    title: '恐龍時代',
+                    icon: '🏛️',
+                    description: '探索恐龍的奧秘',
+                    progress: 0,
+                    totalDays: 7,
+                    unlocked: true
+                },
+                {
+                    id: 'medieval',
+                    title: '石器時代',
+                    icon: '🏰',
+                    description: '體驗原始人的智慧',
+                    progress: 0,
+                    totalDays: 7,
+                    unlocked: false
+                },
+                {
+                    id: 'renaissance',
+                    title: '冰河世紀',
+                    icon: '🎨',
+                    description: '穿越冰河世紀的浪漫',
+                    progress: 0,
+                    totalDays: 7,
+                    unlocked: false
+                },
+                {
+                    id: 'industrial',
+                    title: '古埃及',
+                    icon: '⚙️',
+                    description: '驚歎於神秘的國度',
+                    progress: 0,
+                    totalDays: 7,
+                    unlocked: false
+                },
+                {
+                    id: 'modern',
+                    title: '大航海時代',
+                    icon: '🌆',
+                    description: '駕船展開世界之旅吧',
+                    progress: 0,
+                    totalDays: 7,
+                    unlocked: false
+                },
+                {
+                    id: 'future',
+                    title: '秦朝',
+                    icon: '🚀',
+                    description: '探訪神秘的古中國',
+                    progress: 0,
+                    totalDays: 7,
+                    unlocked: false
+                }
+            ]
+        };
+
+        // 页面初始化
+        document.addEventListener('DOMContentLoaded', function() {
+            initializeGame();
+            setupEventListeners();
+        });
+
+        function initializeGame() {
+            // 检查是否有保存的登录状态
+            const savedUser = localStorage.getItem('currentUser');
+            const prestoryCompleted = localStorage.getItem('prestoryCompleted');
+            
+            if (savedUser) {
+                currentUser = savedUser;
+                if (prestoryCompleted === 'true') {
+                    showMainScreen();
+                } else {
+                    showPrestoryScreen();
+                }
+            }
+        }
+
+        function setupEventListeners() {
+            // 登录表单
+            document.getElementById('loginForm').addEventListener('submit', handleLogin);
+            
+            // 返回主界面
+            document.getElementById('backToMain').addEventListener('click', showMainScreen);
+            
+            // 绘本翻页控制
+            document.getElementById('prevBtn').addEventListener('click', () => changePage(-1));
+            document.getElementById('nextBtn').addEventListener('click', () => changePage(1));
+            
+            // Prestory 控制
+            document.getElementById('prestoryPrevBtn').addEventListener('click', () => changePrestoryPage(-1));
+            document.getElementById('prestoryNextBtn').addEventListener('click', () => changePrestoryPage(1));
+            document.getElementById('skipPrestoryBtn').addEventListener('click', skipPrestory);
+            document.getElementById('prestoryGameBtn').addEventListener('click', startPrestoryGame);
+            document.getElementById('enterErasBtn').addEventListener('click', completePrestory);
+            
+            // 键盘控制
+            document.addEventListener('keydown', handleKeyPress);
+
+            // 新增：游戏触发按钮
+            document.getElementById('gameTriggerBtn').addEventListener('click', startMiniGame);
+        }
+
+        function handleLogin(e) {
+            e.preventDefault();
+            const username = document.getElementById('username').value;
+            const password = document.getElementById('password').value;
+            
+            // 简单验证 - 实际项目中应该有真实的验证逻辑
+            if (username && password) {
+                currentUser = username;
+                localStorage.setItem('currentUser', username);
+                
+                // 检查是否已完成prestory
+                const prestoryCompleted = localStorage.getItem('prestoryCompleted');
+                if (prestoryCompleted === 'true') {
+                    showMainScreen();
+                } else {
+                    showPrestoryScreen();
+                }
+            } else {
+                alert('请输入用户名和密码');
+            }
+        }
+
+        // ========================================
+        // Prestory 相关函数
+        // ========================================
+
+        function showPrestoryScreen() {
+            document.getElementById('loginScreen').style.display = 'none';
+            document.getElementById('mainScreen').style.display = 'none';
+            document.getElementById('storybookScreen').style.display = 'none';
+            document.getElementById('gameScreen').style.display = 'none';
+            document.getElementById('prestoryScreen').style.display = 'block';
+            
+            loadPrestory();
+        }
+
+        function loadPrestory() {
+            // 创建prestory数据
+            prestoryTotalPages = 8; // prestory有10页
+            prestoryCurrentPage = 1;
+            
+            prestoryData = {
+                id: 'prestory',
+                title: '故事背景',
+                pages: []
+            };
+
+            // 生成prestory页面数据
+            const prestoryGamePages = [1, 3, 5]; // 在第3、6、9页插入游戏
+            
+            for (let page = 1; page <= prestoryTotalPages; page++) {
+                const pageData = {
+                    pageNumber: page,
+                    image: `assets/images/prestory/page${page}.png`,
+                    audio: `assets/audio/prestory/page${page}.mp3`,
+                    hasGame: prestoryGamePages.includes(page)
+                };
+                prestoryData.pages.push(pageData);
+            }
+            
+            updatePrestoryDisplay();
+        }
+
+        function updatePrestoryDisplay() {
+            const prestoryImage = document.getElementById('prestoryImage');
+            const imagePath = `assets/images/prestory/page${prestoryCurrentPage}.png`;
+            console.log('Prestory图片路径:', imagePath);
+            prestoryImage.src = imagePath;
+            
+            document.getElementById('prestoryCurrentPage').textContent = prestoryCurrentPage;
+            document.getElementById('prestoryTotalPages').textContent = prestoryTotalPages;
+            
+            // 重置音频状态
+            isPrestoryAudioFinished = false;
+            updatePrestoryAudioStatus('loading', '加載中...');
+            
+            // 更新按钮状态
+            updatePrestoryNavigationButtons();
+            
+            // 播放对应音频
+            playPrestoryAudio();
+            
+            // 检查是否显示游戏按钮
+            checkAndShowPrestoryGameButton();
+
+            // 新增：如果是最后一页且没有游戏，设置自动完成检测
+            if (prestoryCurrentPage === prestoryTotalPages) {
+                const currentPageData = getCurrentPrestoryPageData();
+                if (!currentPageData || !currentPageData.hasGame) {
+                    // 如果最后一页没有游戏，在音频播放完成后自动显示完成面板
+                    // 这个逻辑已经在 playPrestoryAudio() 的 'ended' 事件中处理了
+                }
+            }
+        }
+
+        function changePrestoryPage(direction) {
+            // 如果音频正在播放且未完成，不允许翻页
+            if (isPrestoryAudioPlaying && !isPrestoryAudioFinished) {
+                updatePrestoryAudioStatus('playing', '請等待錄音播放完');
+                return;
+            }
+
+            const newPage = prestoryCurrentPage + direction;
+            if (newPage >= 1 && newPage <= prestoryTotalPages) {
+                prestoryCurrentPage = newPage;
+                updatePrestoryDisplay();
+            } else if (newPage > prestoryTotalPages) {
+                // 到达最后一页，显示完成面板
+                showPrestoryCompletePanel();
+            }
+        }
+
+        function playPrestoryAudio() {
+            // 停止当前音频
+            stopPrestoryAudio();
+            
+            // 播放新音频
+            const audioPath = `assets/audio/prestory/page${prestoryCurrentPage}.mp3`;
+            prestoryAudio = new Audio(audioPath);
+            
+            isPrestoryAudioPlaying = true;
+            isPrestoryAudioFinished = false;
+            updatePrestoryAudioStatus('playing', '播放中...');
+            updatePrestoryNavigationButtons();
+            
+            // 音频加载完成
+            prestoryAudio.addEventListener('canplaythrough', () => {
+                updatePrestoryAudioStatus('playing', '播放中...');
+            });
+            
+            // 音频播放结束
+            prestoryAudio.addEventListener('ended', () => {
+                isPrestoryAudioPlaying = false;
+                isPrestoryAudioFinished = true;
+                updatePrestoryAudioStatus('finished', '播放完成');
+                updatePrestoryNavigationButtons();
+                
+                // 如果这一页有游戏，启用游戏按钮
+                const currentPageData = getCurrentPrestoryPageData();
+                if (currentPageData && currentPageData.hasGame) {
+                    const gameBtn = document.getElementById('prestoryGameBtn');
+                    gameBtn.disabled = false;
+                }
+
+                    // 新增：检查是否为最后一页，如果是则自动显示完成面板
+                if (prestoryCurrentPage === prestoryTotalPages) {
+                    setTimeout(() => {
+                        showPrestoryCompletePanel();
+                    }, 2000); // 延迟2秒显示完成面板，让用户看完最后一页
+                }
+            });
+            
+            // 音频播放错误
+            prestoryAudio.addEventListener('error', () => {
+                isPrestoryAudioPlaying = false;
+                isPrestoryAudioFinished = true;
+                updatePrestoryAudioStatus('finished', '无音频文件');
+                updatePrestoryNavigationButtons();
+                
+                // 如果这一页有游戏，也启用游戏按钮
+                const currentPageData = getCurrentPrestoryPageData();
+                if (currentPageData && currentPageData.hasGame) {
+                    const gameBtn = document.getElementById('prestoryGameBtn');
+                    gameBtn.disabled = false;
+                }
+            });
+            
+            // 开始播放
+            prestoryAudio.play().catch(e => {
+                console.log('Prestory音频播放失败:', e);
+                isPrestoryAudioPlaying = false;
+                isPrestoryAudioFinished = true;
+                updatePrestoryAudioStatus('finished', '播放失败');
+                updatePrestoryNavigationButtons();
+            });
+        }
+
+        function stopPrestoryAudio() {
+            if (prestoryAudio) {
+                prestoryAudio.pause();
+                prestoryAudio.currentTime = 0;
+                prestoryAudio = null;
+            }
+            isPrestoryAudioPlaying = false;
+        }
+
+        function updatePrestoryNavigationButtons() {
+            const prevBtn = document.getElementById('prestoryPrevBtn');
+            const nextBtn = document.getElementById('prestoryNextBtn');
+            
+            prevBtn.disabled = prestoryCurrentPage === 1;
+            
+            // 只有在音频播放完成后才能翻页
+            if (isPrestoryAudioPlaying && !isPrestoryAudioFinished) {
+                nextBtn.disabled = true;
+                nextBtn.title = '请等待语音播放完成';
+                nextBtn.textContent = '→';
+            } else {
+                nextBtn.disabled = false;
+                nextBtn.title = '';
+                
+                // 如果是最后一页，改变按钮文字
+                if (prestoryCurrentPage === prestoryTotalPages) {
+                    nextBtn.textContent = '完成';
+                    nextBtn.style.background = '#00b894'; // 改变颜色提示
+                } else {
+                    nextBtn.textContent = '→';
+                    nextBtn.style.background = '#667eea'; // 恢复原色
+                }
+            }
+        }
+
+        function updatePrestoryAudioStatus(status, text) {
+            const statusElement = document.getElementById('prestoryAudioStatus');
+            const statusText = document.getElementById('prestoryAudioStatusText');
+            
+            statusElement.className = `audio-status audio-${status}`;
+            statusText.textContent = text;
+        }
+
+        function getCurrentPrestoryPageData() {
+            if (!prestoryData || !prestoryData.pages) {
+                return null;
+            }
+            return prestoryData.pages[prestoryCurrentPage - 1];
+        }
+
+        function checkAndShowPrestoryGameButton() {
+            const gameBtn = document.getElementById('prestoryGameBtn');
+            const currentPageData = getCurrentPrestoryPageData();
+            
+            if (currentPageData && currentPageData.hasGame) {
+                gameBtn.classList.remove('hidden');
+                gameBtn.disabled = true; // 等待音频播放完成
+            } else {
+                gameBtn.classList.add('hidden');
+            }
+        }
+
+        function startPrestoryGame() {
+            const currentPageData = getCurrentPrestoryPageData();
+            if (!currentPageData || !currentPageData.hasGame) {
+                return;
+            }
+
+            // 获取prestory游戏数据
+            const gameData = window.GameDataGenerator ? 
+                window.GameDataGenerator.getGameByPage('prestory', 1, prestoryCurrentPage) :
+                getDefaultGameData();
+
+            // 隐藏prestory界面
+            document.getElementById('prestoryScreen').style.display = 'none';
+            
+            // 显示游戏界面
+            const gameScreen = document.getElementById('gameScreen');
+            gameScreen.style.display = 'block';
+            gameScreen.innerHTML = ''; // 清空之前的游戏
+
+            // 创建打地鼠游戏
+            const whackMoleGame = new (window.WhackMoleGame || MockWhackMoleGame)(
+                gameScreen,
+                gameData,
+                {
+                    onComplete: (results) => {
+                        console.log('Prestory游戏完成:', results);
+                        // 返回prestory
+                        returnToPrestory();
+                    },
+                    onExit: () => {
+                        // 返回prestory
+                        returnToPrestory();
+                    }
+                }
+            );
+        }
+
+        function returnToPrestory() {
+            document.getElementById('gameScreen').style.display = 'none';
+            document.getElementById('prestoryScreen').style.display = 'block';
+        }
+
+        function skipPrestory() {
+            if (confirm('确定要跳过故事背景吗？你可以随时回来查看。')) {
+                completePrestory();
+            }
+        }
+
+        function showPrestoryCompletePanel() {
+            document.getElementById('prestoryCompletePanel').classList.remove('hidden');
+        }
+
+        function completePrestory() {
+            // 标记prestory已完成
+            localStorage.setItem('prestoryCompleted', 'true');
+            
+            // 停止音频
+            stopPrestoryAudio();
+            
+            // 进入主界面
+            showMainScreen();
+        }
+
+        // ========================================
+        // 主界面相关函数
+        // ========================================
+
+        function showMainScreen() {
+            document.getElementById('loginScreen').style.display = 'none';
+            document.getElementById('prestoryScreen').style.display = 'none';
+            document.getElementById('storybookScreen').style.display = 'none';
+            document.getElementById('gameScreen').style.display = 'none';
+            document.getElementById('mainScreen').style.display = 'block';
+            
+            document.getElementById('currentUser').textContent = currentUser;
+            renderEras();
+        }
+
+        function renderEras() {
+            const container = document.getElementById('erasContainer');
+            container.innerHTML = '';
+            
+            gameData.eras.forEach(era => {
+                const eraCard = createEraCard(era);
+                container.appendChild(eraCard);
+            });
+        }
+
+        function createEraCard(era) {
+            const card = document.createElement('div');
+            card.className = `era-card ${era.unlocked ? '' : 'locked'}`;
+            card.setAttribute('data-era-id', era.id);
+            
+            const progressPercent = (era.progress / era.totalDays) * 100;
+            let statusClass = 'locked';
+            let statusText = '🔒 未解鎖';
+            
+            if (era.unlocked) {
+                if (era.progress === era.totalDays) {
+                    statusClass = 'completed';
+                    statusText = '✅ 已完成';
+                } else {
+                    statusClass = 'current';
+                    statusText = `📖 進行中 ${era.progress}/${era.totalDays}`;
+                }
+            }
+            
+            card.innerHTML = `
+                ${!era.unlocked ? '<div class="lock-icon">🔒</div>' : ''}
+                <div class="era-icon">${era.icon}</div>
+                <div class="era-title">${era.title}</div>
+                <div class="era-progress">${era.description}</div>
+                <div class="era-progress-bar">
+                    <div class="era-progress-fill" style="width: ${progressPercent}%"></div>
+                </div>
+                <div class="era-status ${statusClass}">${statusText}</div>
+            `;
+            
+            if (era.unlocked) {
+                card.addEventListener('click', () => enterEra(era));
+            }
+            
+            return card;
+        }
+
+        function enterEra(era) {
+            currentEra = era;
+            currentDay = era.progress + 1; // 进入下一天
+            if (currentDay > era.totalDays) currentDay = era.totalDays; // 已完成的时代
+            
+            showStorybookScreen();
+        }
+
+        function showStorybookScreen() {
+            document.getElementById('mainScreen').style.display = 'none';
+            document.getElementById('storybookScreen').style.display = 'block';
+            
+            document.getElementById('storybookTitle').textContent = currentEra.title;
+            document.getElementById('storybookDay').textContent = `第${currentDay}天`;
+            
+            loadStorybook();
+        }
+
+        function loadStorybook() {
+            // 这里应该根据currentEra.id和currentDay加载对应的绘本数据
+            // 示例：假设每天有12页绘本
+            totalPages = 12;
+            currentPage = 1;
+            
+            // 创建绘本数据
+            currentStorybookData = {
+                eraId: currentEra.id,
+                day: currentDay,
+                title: `${currentEra.title} - 第${currentDay}天`,
+                pages: []
+            };
+
+            // 生成页面数据
+            const gameInsertPages = [2, 3, 5]; // 在这些页面插入游戏
+            
+            for (let page = 1; page <= totalPages; page++) {
+                const pageData = {
+                    pageNumber: page,
+                    image: `assets/images/${currentEra.id}/day${currentDay}/page${page}.png`,
+                    audio: `assets/audio/${currentEra.id}/day${currentDay}/page${page}.mp3`,
+                    hasGame: gameInsertPages.includes(page)
+                };
+                currentStorybookData.pages.push(pageData);
+            }
+            
+            updatePageDisplay();
+        }
+
+        function updatePageDisplay() {
+            const pageImage = document.getElementById('pageImage');
+            const imagePath = `assets/images/${currentEra.id}/day${currentDay}/page${currentPage}.png`;
+            console.log(imagePath);
+            pageImage.src = imagePath;
+            
+            document.getElementById('currentPage').textContent = currentPage;
+            document.getElementById('totalPages').textContent = totalPages;
+            
+            // 重置音频状态
+            isAudioFinished = false;
+            updateAudioStatus('loading', '加载中...');
+            
+            // 更新按钮状态
+            updateNavigationButtons();
+            
+            // 播放对应音频
+            playPageAudio();
+            
+            // 检查是否显示游戏按钮
+            checkAndShowGameButton();
+        }
+
+        function changePage(direction) {
+            // 如果音频正在播放且未完成，不允许翻页
+            if (isAudioPlaying && !isAudioFinished) {
+                updateAudioStatus('playing', '请等待语音播放完成');
+                return;
+            }
+
+            const newPage = currentPage + direction;
+            if (newPage >= 1 && newPage <= totalPages) {
+                currentPage = newPage;
+                updatePageDisplay();
+            }
+        }
+
+        function playPageAudio() {
+            // 停止当前音频
+            stopAllAudio();
+            
+            // 播放新音频
+            const audioPath = `assets/audio/${currentEra.id}/day${currentDay}/page${currentPage}.mp3`;
+            currentAudio = new Audio(audioPath);
+            
+            isAudioPlaying = true;
+            isAudioFinished = false;
+            updateAudioStatus('playing', '播放中...');
+            updateNavigationButtons();
+            
+            // 音频加载完成
+            currentAudio.addEventListener('canplaythrough', () => {
+                updateAudioStatus('playing', '播放中...');
+            });
+            
+            // 音频播放结束
+            currentAudio.addEventListener('ended', () => {
+                isAudioPlaying = false;
+                isAudioFinished = true;
+                updateAudioStatus('finished', '播放完成');
+                updateNavigationButtons();
+                
+                // 如果这一页有游戏，启用游戏按钮
+                const currentPageData = getCurrentPageData();
+                if (currentPageData && currentPageData.hasGame) {
+                    const gameBtn = document.getElementById('gameTriggerBtn');
+                    gameBtn.disabled = false;
+                }
+            });
+            
+            // 音频播放错误
+            currentAudio.addEventListener('error', () => {
+                isAudioPlaying = false;
+                isAudioFinished = true;
+                updateAudioStatus('finished', '无音频文件');
+                updateNavigationButtons();
+                
+                // 如果这一页有游戏，也启用游戏按钮
+                const currentPageData = getCurrentPageData();
+                if (currentPageData && currentPageData.hasGame) {
+                    const gameBtn = document.getElementById('gameTriggerBtn');
+                    gameBtn.disabled = false;
+                }
+            });
+            
+            // 开始播放
+            currentAudio.play().catch(e => {
+                console.log('音频播放失败:', e);
+                isAudioPlaying = false;
+                isAudioFinished = true;
+                updateAudioStatus('finished', '播放失败');
+                updateNavigationButtons();
+            });
+        }
+
+        function handleKeyPress(e) {
+            if (document.getElementById('storybookScreen').style.display === 'block') {
+                if (e.key === 'ArrowLeft') {
+                    changePage(-1);
+                } else if (e.key === 'ArrowRight') {
+                    changePage(1);
+                } else if (e.key === 'Escape') {
+                    showMainScreen();
+                } else if (e.key === 'Enter' || e.key === ' ') {
+                    // 新增：空格键或回车键触发游戏
+                    const gameBtn = document.getElementById('gameTriggerBtn');
+                    if (!gameBtn.classList.contains('hidden') && !gameBtn.disabled) {
+                        startMiniGame();
+                    }
+                }
+            } else if (document.getElementById('prestoryScreen').style.display === 'block') {
+                if (e.key === 'ArrowLeft') {
+                    changePrestoryPage(-1);
+                } else if (e.key === 'ArrowRight') {
+                    changePrestoryPage(1);
+                } else if (e.key === 'Escape') {
+                    skipPrestory();
+                } else if (e.key === 'Enter' || e.key === ' ') {
+                    // 空格键或回车键触发prestory游戏
+                    const gameBtn = document.getElementById('prestoryGameBtn');
+                    if (!gameBtn.classList.contains('hidden') && !gameBtn.disabled) {
+                        startPrestoryGame();
+                    }
+                }
+            }
+        }
+
+        function stopAllAudio() {
+            if (currentAudio) {
+                currentAudio.pause();
+                currentAudio.currentTime = 0;
+                currentAudio = null;
+            }
+            isAudioPlaying = false;
+        }
+
+        function updateNavigationButtons() {
+            const prevBtn = document.getElementById('prevBtn');
+            const nextBtn = document.getElementById('nextBtn');
+            
+            prevBtn.disabled = currentPage === 1;
+            
+            // 只有在音频播放完成后才能翻页
+            if (isAudioPlaying && !isAudioFinished) {
+                nextBtn.disabled = true;
+                nextBtn.title = '请等待语音播放完成';
+            } else {
+                nextBtn.disabled = currentPage === totalPages;
+                nextBtn.title = '';
+            }
+        }
+
+        function updateAudioStatus(status, text) {
+            const statusElement = document.getElementById('audioStatus');
+            const statusText = document.getElementById('audioStatusText');
+            
+            statusElement.className = `audio-status audio-${status}`;
+            statusText.textContent = text;
+        }
+
+        function getCurrentPageData() {
+            if (!currentStorybookData || !currentStorybookData.pages) {
+                return null;
+            }
+            return currentStorybookData.pages[currentPage - 1];
+        }
+
+        function checkAndShowGameButton() {
+            const gameBtn = document.getElementById('gameTriggerBtn');
+            const currentPageData = getCurrentPageData();
+            
+            if (currentPageData && currentPageData.hasGame) {
+                gameBtn.classList.remove('hidden');
+                gameBtn.disabled = true; // 等待音频播放完成
+            } else {
+                gameBtn.classList.add('hidden');
+            }
+        }
+
+        function startMiniGame() {
+            const currentPageData = getCurrentPageData();
+            if (!currentPageData || !currentPageData.hasGame) {
+                return;
+            }
+
+            // 获取游戏数据
+            const gameData = window.GameDataGenerator ? 
+                window.GameDataGenerator.getGameByPage(currentEra.id, currentDay, currentPage) :
+                getDefaultGameData();
+
+            // 隐藏绘本界面
+            document.getElementById('storybookScreen').style.display = 'none';
+            
+            // 显示游戏界面
+            const gameScreen = document.getElementById('gameScreen');
+            gameScreen.style.display = 'block';
+            gameScreen.innerHTML = ''; // 清空之前的游戏
+
+            // 创建打地鼠游戏
+            const whackMoleGame = new (window.WhackMoleGame || MockWhackMoleGame)(
+                gameScreen,
+                gameData,
+                {
+                    onComplete: (results) => {
+                        console.log('遊戲完成:', results);
+                        // 返回绘本
+                        returnToStorybook();
+                        
+                        // 更新用户进度
+                        updateGameProgress(results);
+                    },
+                    onExit: () => {
+                        // 返回绘本
+                        returnToStorybook();
+                    }
+                }
+            );
+        }
+
+        function returnToStorybook() {
+            document.getElementById('gameScreen').style.display = 'none';
+            document.getElementById('storybookScreen').style.display = 'block';
+        }
+
+        function updateGameProgress(results) {
+            // 这里应该保存游戏成绩到用户进度
+            console.log('保存游戏成绩:', results);
+            // 可以调用 GameData.manager.updateUserProgress() 来保存进度
+        }
+
+        function getDefaultGameData() {
+            // 默认游戏数据，当GameDataGenerator不可用时使用
+            return {
+                id: 'default_whack_mole',
+                type: 'whack_mole',
+                title: '請找出同音不同義的詞語',
+                questions: [
+                    {
+                        id: 1,
+                        prompt: '那個遮住的字跟其他字意思不一樣呢？',
+                        words: [
+                            { text: '鉛*' },
+                            { text: '*得了' },
+                            { text: '*必 ' },
+                            { text: '忍*住' }
+                        ],
+                        correctAnswer: 0
+                    },
+                    {
+                        id: 2,
+                        prompt: '那個遮住的字跟其他字意思不一樣呢？',
+                        words: [
+                            { text: '鉛*' },
+                            { text: '*得了' },
+                            { text: '*必 ' },
+                            { text: '忍*住' }
+                        ],
+                        correctAnswer: 0
+                    },
+                    {
+                        id: 3,
+                       prompt: '那個遮住的字跟其他字意思不一樣呢？',
+                        words: [
+                            { text: '鉛*' },
+                            { text: '*得了' },
+                            { text: '*必 ' },
+                            { text: '忍*住' }
+                        ],
+                        correctAnswer: 1
+                    },
+                    {
+                        prompt: '那個遮住的字跟其他字意思不一樣呢？',
+                        words: [
+                            { text: '鉛*' },
+                            { text: '*得了' },
+                            { text: '*必 ' },
+                            { text: '忍*住' }
+                        ],
+                        correctAnswer: 0
+                    },
+                    {
+                        prompt: '那個遮住的字跟其他字意思不一樣呢？',
+                        words: [
+                            { text: '鉛*' },
+                            { text: '*得了' },
+                            { text: '*必 ' },
+                            { text: '忍*住' }
+                        ],
+                        correctAnswer: 0
+                    }
+                ]
+            };
+        }
+
+        // 简单的模拟游戏类（如果WhackMoleGame不可用）
+        class MockWhackMoleGame {
+            constructor(container, gameData, callbacks) {
+                this.container = container;
+                this.callbacks = callbacks;
+                this.init();
+            }
+
+            init() {
+                this.container.innerHTML = `
+                    <div style="display: flex; align-items: center; justify-content: center; height: 100vh; background: #74b9ff; color: white; text-align: center; font-family: Arial, sans-serif;">
+                        <div>
+                            <h2>🎮 打地鼠游戏</h2>
+                            <p>游戏组件加载中...</p>
+                            <button onclick="this.complete()" style="padding: 15px 30px; background: white; border: none; border-radius: 25px; cursor: pointer; margin-top: 20px;">完成游戏</button>
+                        </div>
+                    </div>
+                `;
+
+                // 绑定完成按钮事件
+                this.container.querySelector('button').onclick = () => {
+                    if (this.callbacks.onComplete) {
+                        this.callbacks.onComplete({
+                            score: 50,
+                            totalQuestions: 5,
+                            correctAnswers: 5
+                        });
+                    }
+                };
+            }
+        }
+
+        // 修改现有的checkForGame函数
+        function checkForGame() {
+            // 已被checkAndShowGameButton替代，保留以防其他地方调用
+            checkAndShowGameButton();
+        }
+
+        // 页面卸载时清理资源
+        window.addEventListener('beforeunload', function() {
+            stopAllAudio();
+            stopPrestoryAudio();
+        });
+
+    </script>
+</body>
+</html>
