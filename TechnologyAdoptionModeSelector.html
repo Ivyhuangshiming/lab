@@ -1,0 +1,1063 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Technology Acceptance Model Selector - Visual Funnel</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            padding: 20px;
+        }
+
+        /* Modified: 2025-7-28 - Changed container to accommodate side panel */
+        /* Reason: Need to display model tags on the right side for visual funnel effect */
+        .container {
+            max-width: 1600px;
+            margin: 0 auto;
+            background: white;
+            border-radius: 15px;
+            box-shadow: 0 20px 40px rgba(0,0,0,0.1);
+            overflow: hidden;
+            display: flex;
+            flex-direction: column;
+        }
+
+        .header {
+            background: linear-gradient(135deg, #4facfe 0%, #00f2fe 100%);
+            color: white;
+            padding: 30px;
+            text-align: center;
+        }
+
+        .header h1 {
+            font-size: 2.2em;
+            margin-bottom: 10px;
+        }
+
+        .header p {
+            font-size: 1.1em;
+            opacity: 0.9;
+        }
+
+        /* Added: 2025-7-28 - Main content wrapper for two-column layout */
+        /* Reason: To create side-by-side layout for questions and model funnel */
+        .main-content {
+            display: flex;
+            flex: 1;
+            min-height: 600px;
+        }
+
+        /* Modified: 2025-7-28 - Adjusted left section width */
+        /* Reason: To make room for the model funnel on the right */
+        .left-section {
+            flex: 1;
+            max-width: 70%;
+            border-right: 1px solid #e0e0e0;
+        }
+
+        /* Added: 2025-7-28 - Right section for model funnel visualization */
+        /* Reason: To display all model tags and show filtering effect */
+        .right-section {
+            flex: 0 0 30%;
+            background: #f8f9fa;
+            padding: 20px;
+            overflow-y: auto;
+        }
+
+        /* Added: 2025-7-28 - Funnel header styling */
+        /* Reason: To clearly label the model funnel section */
+        .funnel-header {
+            text-align: center;
+            margin-bottom: 20px;
+        }
+
+        .funnel-header h3 {
+            color: #333;
+            font-size: 1.3em;
+            margin-bottom: 10px;
+        }
+
+        .funnel-header p {
+            color: #666;
+            font-size: 0.9em;
+        }
+
+        /* Added: 2025-7-28 - Model tag styling */
+        /* Reason: To create visually appealing tags for each model */
+        .model-tag {
+            display: inline-block;
+            background: white;
+            border: 2px solid #e0e0e0;
+            border-radius: 20px;
+            padding: 8px 16px;
+            margin: 5px;
+            font-size: 0.9em;
+            transition: all 0.3s ease;
+            cursor: help;
+            position: relative;
+        }
+
+        /* Added: 2025-7-28 - Active model tag styling */
+        /* Reason: To highlight models that pass current filters */
+        .model-tag.active {
+            background: #e3f2fd;
+            border-color: #2196f3;
+            animation: tagPulse 0.5s ease;
+        }
+
+        /* Added: 2025-7-28 - Filtered out model tag styling */
+        /* Reason: To visually show models being filtered out */
+        .model-tag.filtered-out {
+            opacity: 0.3;
+            background: #f5f5f5;
+            border-color: #ccc;
+            transform: scale(0.9);
+        }
+
+        /* Added: 2025-7-28 - Animation for tag filtering */
+        /* Reason: To create smooth visual feedback when models are filtered */
+        @keyframes tagPulse {
+            0% { transform: scale(1); }
+            50% { transform: scale(1.05); }
+            100% { transform: scale(1); }
+        }
+
+        /* Added: 2025-7-28 - Model count display */
+        /* Reason: To show how many models remain after filtering */
+        .model-count {
+            text-align: center;
+            margin: 20px 0;
+            padding: 10px;
+            background: #e3f2fd;
+            border-radius: 8px;
+        }
+
+        .model-count .count {
+            font-size: 2em;
+            font-weight: bold;
+            color: #2196f3;
+        }
+
+        .model-count .total {
+            color: #666;
+            font-size: 0.9em;
+        }
+
+        .progress-bar {
+            background: #f0f0f0;
+            height: 8px;
+            margin: 20px 30px;
+            border-radius: 4px;
+            overflow: hidden;
+        }
+
+        .progress-fill {
+            background: linear-gradient(90deg, #4facfe, #00f2fe);
+            height: 100%;
+            transition: width 0.5s ease;
+            width: 0%;
+        }
+
+        .question-container {
+            padding: 40px;
+            min-height: 300px;
+        }
+
+        .question {
+            display: none;
+        }
+
+        .question.active {
+            display: block;
+            animation: fadeIn 0.5s ease;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(20px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        .question h2 {
+            color: #333;
+            margin-bottom: 10px;
+        }
+
+        .question p {
+            color: #666;
+            margin-bottom: 25px;
+            font-size: 1.1em;
+        }
+
+        .options {
+            display: flex;
+            flex-direction: column;
+            gap: 15px;
+        }
+
+        .option {
+            background: #f8f9fa;
+            border: 2px solid #e9ecef;
+            border-radius: 10px;
+            padding: 20px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            position: relative;
+        }
+
+        .option:hover {
+            background: #e3f2fd;
+            border-color: #2196f3;
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(33, 150, 243, 0.2);
+        }
+
+        .option.selected {
+            background: #e3f2fd;
+            border-color: #2196f3;
+            box-shadow: 0 5px 15px rgba(33, 150, 243, 0.3);
+        }
+
+        .option h3 {
+            color: #333;
+            margin-bottom: 5px;
+        }
+
+        .option p {
+            color: #666;
+            font-size: 0.9em;
+            margin: 0;
+        }
+
+        .navigation {
+            display: flex;
+            justify-content: space-between;
+            margin-top: 30px;
+            padding: 0 40px 40px 40px;
+        }
+
+        .btn {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            border: none;
+            padding: 12px 30px;
+            border-radius: 25px;
+            cursor: pointer;
+            font-size: 1em;
+            font-weight: 600;
+            transition: all 0.3s ease;
+        }
+
+        .btn:hover:not(:disabled) {
+            transform: translateY(-2px);
+            box-shadow: 0 10px 20px rgba(102, 126, 234, 0.4);
+        }
+
+        .btn:disabled {
+            background: #ccc;
+            cursor: not-allowed;
+        }
+
+        .results {
+            display: none;
+            padding: 40px;
+        }
+
+        .results.active {
+            display: block;
+            animation: fadeIn 0.5s ease;
+        }
+
+        .recommendation-category {
+            margin-bottom: 40px;
+        }
+
+        .category-header {
+            padding: 15px 20px;
+            border-radius: 8px 8px 0 0;
+            color: white;
+            font-size: 1.2em;
+            font-weight: bold;
+        }
+
+        .most-recommended .category-header {
+            background: #4caf50;
+        }
+
+        .medium-recommended .category-header {
+            background: #ff9800;
+        }
+
+        .adjusted-recommended .category-header {
+            background: #f44336;
+        }
+
+        .model-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(350px, 1fr));
+            gap: 20px;
+            padding: 20px;
+            background: #f8f9fa;
+            border-radius: 0 0 8px 8px;
+        }
+
+        .model-card {
+            background: white;
+            border-radius: 10px;
+            padding: 20px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.05);
+        }
+
+        .model-card h3 {
+            color: #333;
+            margin-bottom: 15px;
+            font-size: 1.4em;
+            border-bottom: 2px solid #e0e0e0;
+            padding-bottom: 10px;
+        }
+
+        .node-list {
+            margin-top: 15px;
+        }
+
+        .node-item {
+            padding: 8px 0;
+            border-bottom: 1px solid #f0f0f0;
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-start;
+        }
+
+        .node-item:last-child {
+            border-bottom: none;
+        }
+
+        .node-label {
+            font-weight: 600;
+            color: #555;
+            flex: 0 0 180px;
+            font-size: 0.9em;
+        }
+
+        .node-value {
+            flex: 1;
+            color: #333;
+            text-align: right;
+            font-size: 0.9em;
+        }
+
+        .context-summary {
+            background: #e3f2fd;
+            padding: 20px;
+            border-radius: 8px;
+            margin-bottom: 30px;
+        }
+
+        .context-summary h3 {
+            color: #1976d2;
+            margin-bottom: 15px;
+        }
+
+        .context-item {
+            display: inline-block;
+            background: white;
+            padding: 5px 15px;
+            margin: 5px;
+            border-radius: 20px;
+            font-size: 0.9em;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+        }
+
+        .scenario-example {
+            background: #fff9c4;
+            padding: 15px;
+            border-radius: 5px;
+            margin-bottom: 30px;
+            font-style: italic;
+        }
+
+        .scenario-example strong {
+            color: #f57f17;
+        }
+
+        .no-results {
+            text-align: center;
+            padding: 40px;
+            color: #666;
+        }
+
+        /* Added: 2025-7-28 - Responsive design adjustments */
+        /* Reason: To ensure layout works on smaller screens */
+        @media (max-width: 1200px) {
+            .main-content {
+                flex-direction: column;
+            }
+            
+            .left-section {
+                max-width: 100%;
+                border-right: none;
+                border-bottom: 1px solid #e0e0e0;
+            }
+            
+            .right-section {
+                flex: 1;
+                max-height: 300px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>Technology Acceptance Model Selector</h1>
+            <p>Find the most appropriate technology acceptance model for your research</p>
+        </div>
+
+        <div class="main-content">
+            <div class="left-section">
+                <div class="progress-bar">
+                    <div class="progress-fill" id="progressFill"></div>
+                </div>
+
+                <div class="question-container">
+                    <!-- Stage 1: Core Filtering (Questions 1-4) -->
+                    <div class="question active" data-node="1">
+                        <h2>1. Social Agency Perception</h2>
+                        <p>Does the technology exhibit social characteristics, personality, or agency requiring interpersonal evaluation?</p>
+                        <div class="options">
+                            <div class="option" data-value="social">
+                                <h3>Social Agent</h3>
+                                <p>Technology with human-like features, personality, or social presence (e.g., social robots, avatars)</p>
+                            </div>
+                            <div class="option" data-value="functional">
+                                <h3>Functional Tool</h3>
+                                <p>Technology as utility without social characteristics (e.g., software, apps, systems)</p>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="question" data-node="2">
+                        <h2>2. Adoption Timeline</h2>
+                        <p>Does your study focus on initial acceptance decisions or sustained usage patterns over time?</p>
+                        <div class="options">
+                            <div class="option" data-value="initial">
+                                <h3>Initial Adoption</h3>
+                                <p>First-time use, acceptance decision, or early adoption phase</p>
+                            </div>
+                            <div class="option" data-value="prolonged">
+                                <h3>Prolonged Usage</h3>
+                                <p>Continued use, satisfaction, habit formation over time</p>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="question" data-node="3">
+                        <h2>3. Task Nature</h2>
+                        <p>What is the primary purpose of the technology usage?</p>
+                        <div class="options">
+                            <div class="option" data-value="interpersonal">
+                                <h3>Interpersonal/Social</h3>
+                                <p>Social interaction, communication, relationship building</p>
+                            </div>
+                            <div class="option" data-value="informational">
+                                <h3>Informational/Functional</h3>
+                                <p>Task completion, information processing, productivity</p>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="question" data-node="4">
+                        <h2>4. Voluntariness of Use</h2>
+                        <p>Is technology usage mandated by organization/context or chosen by individual preference?</p>
+                        <div class="options">
+                            <div class="option" data-value="mandatory">
+                                <h3>Mandatory Context</h3>
+                                <p>Required by organization, institution, or situation</p>
+                            </div>
+                            <div class="option" data-value="voluntary">
+                                <h3>Voluntary Context</h3>
+                                <p>Individual choice to adopt and use</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="navigation">
+                    <button class="btn" id="prevBtn" disabled>Previous</button>
+                    <button class="btn" id="nextBtn" disabled>Next</button>
+                </div>
+
+                <div class="results" id="results">
+                    <h2>Model Recommendations Based on Your Research Context</h2>
+                    
+                    <div class="context-summary">
+                        <h3>Your Research Context</h3>
+                        <div id="contextSummary"></div>
+                    </div>
+
+                    <div class="scenario-example" id="scenarioExample"></div>
+
+                    <div id="modelRecommendations"></div>
+                    
+                    <div class="navigation" style="margin-top: 40px;">
+                        <button class="btn" id="resetBtn">Start Over</button>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Added: 2025-7-28 - Right section for model funnel -->
+            <!-- Reason: To display all models and show filtering in real-time -->
+            <div class="right-section">
+                <div class="funnel-header">
+                    <h3>Technology Acceptance Models</h3>
+                    <p>Models are filtered as you answer questions</p>
+                </div>
+                
+                <div class="model-count">
+                    <div class="count" id="activeCount">12</div>
+                    <div class="total">of 12 models remaining</div>
+                </div>
+                
+                <div id="modelTags">
+                    <!-- Model tags will be inserted here by JavaScript -->
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        let currentQuestion = 1;
+        let answers = {};
+
+        // Added: 2025-7-28 - Complete list of all models
+        // Reason: To display all models in the funnel visualization
+        const allModels = ['TAM', 'TAM2', 'TAM3', 'UTAUT', 'UTAUT2', 'TTF', 'EDM', 'Almere', 'sRAM', 'I-PEFiC', 'TORC', 'AIEPSAM'];
+
+        // Added: 2025-7-28 - Model filtering rules based on Table 3
+        // Reason: To determine which models remain active after each question
+        const modelFilters = {
+            1: { // Social Agency Perception
+                'social': ['Almere', 'sRAM', 'I-PEFiC', 'TORC'],
+                'functional': ['TAM', 'TAM2', 'TAM3', 'UTAUT', 'UTAUT2', 'TTF', 'EDM', 'AIEPSAM'],
+                'both': ['I-PEFiC', 'TORC'] // Models that can handle both
+            },
+            2: { // Adoption Timeline
+                'initial': ['TAM', 'TAM2', 'TAM3', 'UTAUT', 'AIEPSAM'],
+                'prolonged': ['EDM', 'TORC'],
+                'both': ['TTF', 'Almere', 'UTAUT2', 'sRAM', 'I-PEFiC'] // Models that handle both
+            },
+            3: { // Task Nature
+                'interpersonal': ['Almere'],
+                'informational': ['TAM', 'TAM2', 'TAM3', 'UTAUT'],
+                'both': ['TTF', 'EDM', 'UTAUT2', 'sRAM', 'I-PEFiC', 'TORC', 'AIEPSAM'] // Models that handle both
+            },
+            4: { // Voluntariness of Use
+                'mandatory': ['UTAUT'],
+                'voluntary': ['TAM', 'Almere', 'UTAUT2', 'sRAM', 'I-PEFiC', 'TORC', 'AIEPSAM'],
+                'both': ['TAM2', 'TAM3', 'TTF', 'EDM'] // Models that handle both
+            }
+        };
+
+        // Model characteristics for nodes 5-11 (based on Table 3)
+        const modelCharacteristics = {
+            'TAM': {
+                5: 'None',
+                6: 'Implicit',
+                7: 'Cognitive Only',
+                8: 'No Valence Consideration',
+                9: 'None',
+                10: 'Parsimonious (~30-40%)',
+                11: 'Limited (universal)'
+            },
+            'TAM2': {
+                5: 'Explicit (Subjective Norm)',
+                6: 'Partial (Job Relevance)',
+                7: 'Cognitive Only',
+                8: 'No Valence Consideration',
+                9: 'None',
+                10: 'Moderate (~37-52%)',
+                11: 'Limited (Voluntariness)'
+            },
+            'TAM3': {
+                5: 'Explicit (Subjective Norm)',
+                6: 'Partial (Job Relevance)',
+                7: 'Cognition & Limited Affect (Anxiety, Playfulness)',
+                8: 'Limited (Anxiety, Playfulness)',
+                9: 'None',
+                10: 'Comprehensive (~40-53%)',
+                11: 'Explicit (User Traits, Experience moderators)'
+            },
+            'UTAUT': {
+                5: 'Explicit (Social Influence)',
+                6: 'Explicit (Facilitating Conditions)',
+                7: 'Cognitive Only',
+                8: 'No Valence Consideration',
+                9: 'None',
+                10: 'Comprehensive (~70%)',
+                11: 'Explicit (Age, Gender, Experience, Voluntariness)'
+            },
+            'UTAUT2': {
+                5: 'Explicit (Social Influence)',
+                6: 'Explicit (Facilitating Conditions)',
+                7: 'Cognitive & Affect (Hedonic Motivation)',
+                8: 'Limited (Hedonic Motivation)',
+                9: 'None',
+                10: 'Comprehensive (Consumer Factors)',
+                11: 'Explicit (Consumer Traits, Habits, Price Value)'
+            },
+            'TTF': {
+                5: 'Limited',
+                6: 'Essential (Core concept)',
+                7: 'Cognitive Only (Fit Evaluation)',
+                8: 'No Valence Consideration',
+                9: 'None',
+                10: 'Parsimonious (Fit Focused)',
+                11: 'Moderate (Task-dependent)'
+            },
+            'EDM': {
+                5: 'Limited (Expectation from norms)',
+                6: 'Partial (Expectations vs. Performance)',
+                7: 'Cognitive-Affect (Expectations)',
+                8: 'Explicit (Satisfaction)',
+                9: 'None',
+                10: 'Moderate (Expectation vs. Reality)',
+                11: 'Moderate (Expectation-specific)'
+            },
+            'Almere': {
+                5: 'Limited (Elderly Context)',
+                6: 'Partial (Perceived Adaptiveness)',
+                7: 'Cognitive & Affect',
+                8: 'Limited (Enjoyment, Anxiety)',
+                9: 'None',
+                10: 'Comprehensive (~59-79%)',
+                11: 'Explicit (Elderly Population)'
+            },
+            'sRAM': {
+                5: 'Explicit (Subjective Social Norms)',
+                6: 'Partial (Needs Congruency)',
+                7: 'Cognition & Affect (Trust, Rapport)',
+                8: 'Explicit (Perceived Humanness, Social Presence)',
+                9: 'Limited',
+                10: 'Comprehensive (Multi-dimensional)',
+                11: 'Explicit (Service Contexts)'
+            },
+            'I-PEFiC': {
+                5: 'Limited (Similarity)',
+                6: 'Explicit (Affordances to Goal relevance)',
+                7: 'Cognitive & Affect (Valence)',
+                8: 'Explicit Goal-Evaluation (Valence Construct)',
+                9: 'None',
+                10: 'Comprehensive (Cognitive-Affective)',
+                11: 'Implicit (Agency Situated in Context)'
+            },
+            'TORC': {
+                5: 'Limited (Interpersonal Focus)',
+                6: 'Explicit (Communication Alignment)',
+                7: 'Cognitive & Affect (Emotional Bonds)',
+                8: 'Explicit Goal-Evaluation (Emotional Responses)',
+                9: 'Explicit (Quality, Reciprocity, Self-Disclosure)',
+                10: 'Comprehensive (Process-oriented, Neural Paths)',
+                11: 'Explicit (Longitudinal Context & Deep User Interaction)'
+            },
+            'AIEPSAM': {
+                5: 'Moderate',
+                6: 'Implicit',
+                7: 'Cognitive & Affect (CAT: cognitive + PAD)',
+                8: 'Limited (Pleasure, Arousal, Dominance)',
+                9: 'None',
+                10: 'Comprehensive (CAT + 9 AI-specific factors)',
+                11: 'Limited (Consumer Context, No Explicit Moderators)'
+            }
+        };
+
+        const nodeNames = {
+            5: 'Social Norm Influence',
+            6: 'Task-Technology Alignment',
+            7: 'Decision Process Orientation',
+            8: 'Valence Processing',
+            9: 'Communication Features',
+            10: 'Explanatory Approach',
+            11: 'User & Context Specificity'
+        };
+
+        // Table 4 recommendations based on combinations
+        const modelRecommendations = {
+            'functional-initial-informational-mandatory': {
+                scenario: 'A hospital mandates all doctors must use Epic EMR system starting next month for patient records.',
+                most: ['UTAUT'],
+                medium: ['TAM2', 'TAM3'],
+                adjusted: ['TAM']
+            },
+            'functional-initial-informational-voluntary': {
+                scenario: 'A freelance designer discovers Notion and considers adopting it for personal project management.',
+                most: ['TAM', 'UTAUT2'],
+                medium: ['TAM3', 'TTF'],
+                adjusted: ['TTF']
+            },
+            'functional-initial-interpersonal-mandatory': {
+                scenario: 'A high school requires all students to use Duolingo\'s AI conversation partner for 30 minutes daily as part of Spanish class homework.',
+                most: ['UTAUT'],
+                medium: ['TAM2', 'UTAUT2'],
+                adjusted: ['I-PEFiC']
+            },
+            'functional-initial-interpersonal-voluntary': {
+                scenario: 'Someone downloads Headspace app and tries the AI sleep coach that talks them through bedtime meditation.',
+                most: ['UTAUT2'],
+                medium: ['TAM3', 'I-PEFiC'],
+                adjusted: ['TAM']
+            },
+            'functional-prolonged-informational-mandatory': {
+                scenario: 'After 2 years of mandatory SAP usage, employees at a manufacturing company must continue using it daily.',
+                most: ['EDM', 'UTAUT'],
+                medium: ['UTAUT2', 'TTF'],
+                adjusted: ['TAM2']
+            },
+            'functional-prolonged-informational-voluntary': {
+                scenario: 'A researcher has used Zotero reference manager for 5 years and continues subscribing to premium features.',
+                most: ['UTAUT2', 'EDM'],
+                medium: ['TAM', 'TTF'],
+                adjusted: ['TAM']
+            },
+            'functional-prolonged-interpersonal-mandatory': {
+                scenario: 'Medical students must use an AI patient simulator throughout their 4-year program.',
+                most: ['EDM', 'UTAUT'],
+                medium: ['UTAUT2', 'I-PEFiC'],
+                adjusted: ['TAM2']
+            },
+            'functional-prolonged-interpersonal-voluntary': {
+                scenario: 'Someone has used Replika AI companion app for mental wellness support for 18 months.',
+                most: ['UTAUT2', 'EDM', 'I-PEFiC'],
+                medium: ['TORC', 'sRAM'],
+                adjusted: ['TAM']
+            },
+            'social-initial-informational-mandatory': {
+                scenario: 'Visitors entering Singapore\'s Changi Airport must interact with SARA, a humanoid robot that checks passports.',
+                most: ['I-PEFiC', 'sRAM'],
+                medium: ['UTAUT', 'TAM2'],
+                adjusted: ['Almere']
+            },
+            'social-initial-informational-voluntary': {
+                scenario: 'A museum visitor can choose to follow Pepper robot for a guided tour.',
+                most: ['I-PEFiC', 'sRAM'],
+                medium: ['UTAUT2', 'Almere'],
+                adjusted: ['TAM']
+            },
+            'social-initial-interpersonal-mandatory': {
+                scenario: 'Children with autism must interact with NAO robot for 1-hour therapy sessions twice weekly.',
+                most: ['Almere', 'I-PEFiC'],
+                medium: ['sRAM', 'TORC'],
+                adjusted: ['UTAUT']
+            },
+            'social-initial-interpersonal-voluntary': {
+                scenario: 'Someone purchases Sony\'s Aibo robot dog as a companion.',
+                most: ['Almere', 'I-PEFiC'],
+                medium: ['sRAM', 'TORC'],
+                adjusted: ['UTAUT2']
+            },
+            'social-prolonged-informational-mandatory': {
+                scenario: 'Bank employees must work with humanoid robot colleague "Eva" for 2+ years.',
+                most: ['EDM', 'I-PEFiC', 'TORC'],
+                medium: ['sRAM', 'UTAUT'],
+                adjusted: ['EDM']
+            },
+            'social-prolonged-informational-voluntary': {
+                scenario: 'A PhD student chooses to work with AI research assistant "Claude" for 3 years.',
+                most: ['TORC', 'EDM', 'I-PEFiC'],
+                medium: ['UTAUT2', 'sRAM'],
+                adjusted: ['I-PEFiC']
+            },
+            'social-prolonged-interpersonal-mandatory': {
+                scenario: 'Elderly in care facility must interact daily with PARO therapeutic seal robot for dementia care.',
+                most: ['TORC', 'Almere'],
+                medium: ['I-PEFiC', 'sRAM'],
+                adjusted: ['Almere']
+            },
+            'social-prolonged-interpersonal-voluntary': {
+                scenario: 'An elderly person living alone purchases ElliQ companion robot and develops a 2-year relationship.',
+                most: ['TORC', 'I-PEFiC'],
+                medium: ['Almere', 'sRAM'],
+                adjusted: ['UTAUT2']
+            }
+        };
+
+        // Added: 2025-7-28 - Initialize model tags
+        // Reason: To display all models at the start of the funnel
+        function initializeModelTags() {
+            const container = document.getElementById('modelTags');
+            container.innerHTML = '';
+            
+            allModels.forEach(model => {
+                const tag = document.createElement('div');
+                tag.className = 'model-tag active';
+                tag.textContent = model;
+                tag.id = `model-${model}`;
+                container.appendChild(tag);
+            });
+        }
+
+        // Added: 2025-7-28 - Get currently active models based on answers
+        // Reason: To determine which models should remain active after filtering
+        function getActiveModels() {
+            let activeModels = new Set(allModels);
+            
+            // Apply filters based on answered questions
+            for (let node = 1; node <= currentQuestion && node <= 4; node++) {
+                if (answers[node]) {
+                    const filter = modelFilters[node];
+                    const value = answers[node];
+                    
+                    // Get models that match this filter
+                    let matchingModels = new Set();
+                    
+                    // Add models that specifically match the selected value
+                    if (filter[value]) {
+                        filter[value].forEach(model => matchingModels.add(model));
+                    }
+                    
+                    // Add models that handle 'both' options
+                    if (filter['both']) {
+                        filter['both'].forEach(model => matchingModels.add(model));
+                    }
+                    
+                    // Intersect with currently active models
+                    activeModels = new Set([...activeModels].filter(model => matchingModels.has(model)));
+                }
+            }
+            
+            return activeModels;
+        }
+
+        // Added: 2025-7-28 - Update model tag visualization
+        // Reason: To show filtering effect with animations
+        function updateModelTags() {
+            const activeModels = getActiveModels();
+            
+            allModels.forEach(model => {
+                const tag = document.getElementById(`model-${model}`);
+                if (tag) {
+                    if (activeModels.has(model)) {
+                        tag.classList.remove('filtered-out');
+                        tag.classList.add('active');
+                    } else {
+                        tag.classList.remove('active');
+                        tag.classList.add('filtered-out');
+                    }
+                }
+            });
+            
+            // Update count
+            document.getElementById('activeCount').textContent = activeModels.size;
+            document.querySelector('.model-count .total').textContent = `of ${allModels.length} models remaining`;
+        }
+
+        function updateProgress() {
+            const progress = (currentQuestion / 4) * 100;
+            document.getElementById('progressFill').style.width = progress + '%';
+        }
+
+        function updateButtons() {
+            const prevBtn = document.getElementById('prevBtn');
+            const nextBtn = document.getElementById('nextBtn');
+
+            prevBtn.disabled = currentQuestion <= 1;
+            const hasAnswer = answers[currentQuestion];
+            nextBtn.disabled = !hasAnswer;
+
+            if (currentQuestion === 4 && hasAnswer) {
+                nextBtn.textContent = 'View Model Recommendations';
+            } else {
+                nextBtn.textContent = 'Next';
+            }
+        }
+
+        function selectOption(element, value) {
+            const question = element.closest('.question');
+            const questionNumber = parseInt(question.dataset.node);
+
+            question.querySelectorAll('.option').forEach(opt => opt.classList.remove('selected'));
+            element.classList.add('selected');
+            answers[questionNumber] = value;
+
+            // Added: 2025-7-28 - Update model tags when answer changes
+            // Reason: To show real-time filtering effect
+            updateModelTags();
+            updateButtons();
+        }
+
+        function getRecommendationKey() {
+            return `${answers[1]}-${answers[2]}-${answers[3]}-${answers[4]}`;
+        }
+
+        function displayResults() {
+            const key = getRecommendationKey();
+            const recommendations = modelRecommendations[key];
+            
+            // Display context summary
+            const contextDiv = document.getElementById('contextSummary');
+            contextDiv.innerHTML = `
+                <span class="context-item"><strong>Social Agency:</strong> ${answers[1]}</span>
+                <span class="context-item"><strong>Timeline:</strong> ${answers[2]}</span>
+                <span class="context-item"><strong>Task Nature:</strong> ${answers[3]}</span>
+                <span class="context-item"><strong>Voluntariness:</strong> ${answers[4]}</span>
+            `;
+            
+            // Display scenario example
+            const scenarioDiv = document.getElementById('scenarioExample');
+            if (recommendations && recommendations.scenario) {
+                scenarioDiv.innerHTML = `<strong>Example Scenario:</strong> ${recommendations.scenario}`;
+                scenarioDiv.style.display = 'block';
+            } else {
+                scenarioDiv.style.display = 'none';
+            }
+            
+            // Display recommendations
+            const recommendationsDiv = document.getElementById('modelRecommendations');
+            
+            if (!recommendations) {
+                recommendationsDiv.innerHTML = `
+                    <div class="no-results">
+                        <h3>No direct recommendations found for this combination</h3>
+                        <p>This specific combination of characteristics doesn't have pre-defined recommendations. 
+                        Consider adjusting your criteria or consulting the comprehensive model comparison table.</p>
+                    </div>
+                `;
+                return;
+            }
+            
+            // Build recommendation categories
+            let html = '';
+            
+            // Most Recommended
+            if (recommendations.most && recommendations.most.length > 0) {
+                html += `
+                    <div class="recommendation-category most-recommended">
+                        <div class="category-header">Highly Recommended Models</div>
+                        <div class="model-grid">
+                            ${recommendations.most.map(model => createModelCard(model)).join('')}
+                        </div>
+                    </div>
+                `;
+            }
+            
+            // Medium Recommended
+            if (recommendations.medium && recommendations.medium.length > 0) {
+                html += `
+                    <div class="recommendation-category medium-recommended">
+                        <div class="category-header">Recommended Models</div>
+                        <div class="model-grid">
+                            ${recommendations.medium.map(model => createModelCard(model)).join('')}
+                        </div>
+                    </div>
+                `;
+            }
+            
+            // Adjusted Recommended
+            if (recommendations.adjusted && recommendations.adjusted.length > 0) {
+                html += `
+                    <div class="recommendation-category adjusted-recommended">
+                        <div class="category-header">Optional Models (Require Modifications)</div>
+                        <div class="model-grid">
+                            ${recommendations.adjusted.map(model => createModelCard(model)).join('')}
+                        </div>
+                    </div>
+                `;
+            }
+            
+            recommendationsDiv.innerHTML = html;
+        }
+
+        function createModelCard(modelName) {
+            const chars = modelCharacteristics[modelName];
+            if (!chars) return '';
+            
+            return `
+                <div class="model-card">
+                    <h3>${modelName}</h3>
+                    <div class="node-list">
+                        ${Object.entries(nodeNames).map(([nodeId, nodeName]) => `
+                            <div class="node-item">
+                                <div class="node-label">${nodeName}:</div>
+                                <div class="node-value">${chars[nodeId]}</div>
+                            </div>
+                        `).join('')}
+                    </div>
+                </div>
+            `;
+        }
+
+        function nextQuestion() {
+            if (currentQuestion === 4) {
+                // Modified: 2025-7-28 - Hide funnel panel when showing results
+                // Reason: To give more space for results display
+                document.querySelector('.right-section').style.display = 'none';
+                document.querySelector('.left-section').style.maxWidth = '100%';
+                
+                document.querySelector('.question-container').style.display = 'none';
+                document.querySelector('.navigation').style.display = 'none';
+                document.querySelector('.progress-bar').style.display = 'none';
+                
+                displayResults();
+                document.getElementById('results').classList.add('active');
+                return;
+            }
+
+            document.querySelector(`[data-node="${currentQuestion}"]`).classList.remove('active');
+            currentQuestion++;
+            document.querySelector(`[data-node="${currentQuestion}"]`).classList.add('active');
+
+            updateProgress();
+            updateButtons();
+        }
+
+        function previousQuestion() {
+            if (currentQuestion <= 1) return;
+
+            document.querySelector(`[data-node="${currentQuestion}"]`).classList.remove('active');
+            currentQuestion--;
+            document.querySelector(`[data-node="${currentQuestion}"]`).classList.add('active');
+
+            // Added: 2025-7-28 - Clear answers for questions after current
+            // Reason: To ensure model filtering is accurate when going back
+            for (let i = currentQuestion + 1; i <= 4; i++) {
+                delete answers[i];
+            }
+
+            updateProgress();
+            updateButtons();
+            // Added: 2025-7-28 - Update model tags when going back
+            // Reason: To reflect changes in filtering
+            updateModelTags();
+        }
+
+        // Event listeners
+        document.addEventListener('DOMContentLoaded', function() {
+            // Added: 2025-7-28 - Initialize model tags on load
+            // Reason: To show all models at the start
+            initializeModelTags();
+            
+            document.querySelectorAll('.option').forEach(function(opt) {
+                opt.addEventListener('click', function() {
+                    selectOption(this, this.dataset.value);
+                });
+            });
+
+            document.getElementById('nextBtn').addEventListener('click', nextQuestion);
+            document.getElementById('prevBtn').addEventListener('click', previousQuestion);
+            document.getElementById('resetBtn').addEventListener('click', function() {
+                window.location.reload();
+            });
+
+            updateProgress();
+            updateButtons();
+        });
+    </script>
+</body>
+</html>
