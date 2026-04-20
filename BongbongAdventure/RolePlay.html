@@ -1,0 +1,286 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>輔導對話紀錄 - 角色扮演腳本</title>
+  <!-- 引入 Tailwind CSS CDN 用於樣式設計 -->
+  <script src="https://cdn.tailwindcss.com"></script>
+  <style>
+    /* 簡單的過場動畫設定 */
+    @keyframes fadeIn {
+      0% { opacity: 0; transform: translateY(15px); }
+      100% { opacity: 1; transform: translateY(0); }
+    }
+    .animate-fade-in {
+      animation: fadeIn 0.4s ease-out forwards;
+    }
+    /* 自訂捲軸樣式 */
+    ::-webkit-scrollbar { width: 6px; }
+    ::-webkit-scrollbar-track { background: transparent; }
+    ::-webkit-scrollbar-thumb { background-color: #cbd5e1; border-radius: 10px; }
+  </style>
+</head>
+<body class="min-h-screen bg-gradient-to-br from-indigo-50 to-pink-50 flex items-center justify-center p-4 font-sans text-slate-800 selection:bg-indigo-200">
+
+  <div class="w-full max-w-6xl bg-white rounded-2xl shadow-2xl flex flex-col overflow-hidden h-[800px] max-h-[90vh] relative">
+    
+    <!-- 頂部 Header -->
+    <div class="bg-white border-b border-slate-100 p-4 relative z-10 flex flex-col">
+      <div class="flex justify-between items-center mb-2">
+        <span class="text-xs font-semibold tracking-wider text-slate-400 uppercase">
+          輔導對話紀錄
+        </span>
+        <span id="session-title" class="bg-indigo-100 text-indigo-700 py-1 px-3 rounded-full text-sm font-bold shadow-sm">
+          <!-- 節數標題將由 JS 填入 -->
+        </span>
+      </div>
+      <!-- 進度條 -->
+      <div class="w-full bg-slate-100 rounded-full h-1.5 mt-2 overflow-hidden">
+        <div id="progress-bar" class="bg-indigo-500 h-1.5 rounded-full transition-all duration-300 ease-out" style="width: 0%"></div>
+      </div>
+    </div>
+
+    <!-- 主要內容區 -->
+    <div class="flex-1 relative p-8 md:p-12 overflow-y-auto bg-[url('https://www.transparenttextures.com/patterns/cubes.png')] bg-opacity-10">
+      <div id="content-container" class="h-full flex flex-col justify-center animate-fade-in">
+        <!-- 對話內容將由 JS 動態生成 -->
+      </div>
+    </div>
+
+    <!-- 底部控制列 -->
+    <div class="bg-slate-50 border-t border-slate-200 p-4 flex justify-between items-center z-10 shadow-[0_-4px_6px_-1px_rgba(0,0,0,0.05)]">
+      <button id="btn-prev" class="flex items-center gap-2 px-5 py-2.5 rounded-lg font-medium transition-colors text-slate-300 cursor-not-allowed">
+        <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="15 18 9 12 15 6"/></svg>
+        <span class="hidden sm:inline">上一頁</span>
+      </button>
+
+      <div class="flex flex-col items-center">
+         <span id="progress-text" class="text-sm font-medium text-slate-500">
+           <!-- 進度文字 -->
+         </span>
+         <span class="text-xs text-slate-400 mt-0.5">可用鍵盤 ◄ ► 切換</span>
+      </div>
+
+      <button id="btn-next" class="flex items-center gap-2 px-5 py-2.5 rounded-lg font-medium transition-colors text-white bg-indigo-600 hover:bg-indigo-700 active:bg-indigo-800 shadow-md">
+        <span class="hidden sm:inline">下一頁</span>
+        <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="9 18 15 12 9 6"/></svg>
+      </button>
+    </div>
+
+  </div>
+
+  <!-- JavaScript 邏輯 -->
+  <script>
+    // 劇本資料
+    const scriptData = [
+      // 第4次會面
+      { session: "第4次會面：認知三角 劇本", type: "action", text: "— 第4次會面角色扮演開始 —" },
+      { session: "第4次會面：認知三角 劇本", type: "counsellor", text: "Alice，今天我們要一起當「心靈偵探」，把影響你專心溫書，造成你愧疚感的犯人揪出來。我們要使用的工具叫「認知三角」。它能幫助我們看見：我們的「想法」如何影響「感受」，進而決定我們的「行為」。" },
+      { session: "第4次會面：認知三角 劇本", type: "counsellor", text: "現在，我們需要先認識你即將使用的工具「認知三角」。" },
+      { session: "第4次會面：認知三角 劇本", type: "action", text: "— 給Alice紙、筆 —" },
+      { session: "第4次會面：認知三角 劇本", type: "counsellor", text: "麻煩你先畫一個三角形。接著在三個角分別寫 上「想法」、「感受」、「行為」" },
+      { session: "第4次會面：認知三角 劇本", type: "action", text: "— Alice畫完後 —" },
+      { session: "第4次會面：認知三角 劇本", type: "counsellor", text: "這三個元素是息息相關的。我們來做個練習：想像有一天妳回教會，一位陌生的姊妹笑容滿面地走向妳。如果妳當下的想法是「她可能有什麼目的，才表現得這麼熱情」，那麼妳會有什麼感受？" },
+      { session: "第4次會面：認知三角 劇本", type: "alice", text: "我會感到不安、緊張。" },
+      { session: "第4次會面：認知三角 劇本", type: "counsellor", text: "那麼基於這個想法，你會有什麼行動？" },
+      { session: "第4次會面：認知三角 劇本", type: "alice", text: "我會立刻避開，對她視而不見。" },
+      { session: "第4次會面：認知三角 劇本", type: "counsellor", text: "那如果針對同一個情境，妳看到這個姊妹笑容滿面地走過來時，你心中的想法是「她可能想認識我，讓我感受到愛與接納」，這時妳的感受與行動會如何改變？" },
+      { session: "第4次會面：認知三角 劇本", type: "alice", text: "我會感到開心和溫暖，也會坦誠與她交談。" },
+      { session: "第4次會面：認知三角 劇本", type: "counsellor", text: "太棒了，偵探 Alice！妳發現了嗎？同樣的情境，當妳的想法改變，妳的心情和做法就完全不同了。" },
+      { session: "第4次會面：認知三角 劇本", type: "alice", text: "嗯，原來我的腦袋可以有不同的選擇。" },
+      { session: "第4次會面：認知三角 劇本", type: "counsellor", text: "沒錯。現在，我們要拿出偵探的勇氣，對付困擾妳最久的「大犯人」。讓我們回到那個令妳痛苦的情境：妳正在房間專心溫書，準備明天的考試，但腦海中不斷浮現牧師責備妳的聲音。妳記得那個聲音說了什麼嗎？" },
+      { session: "第4次會面：認知三角 劇本", type: "alice", text: "牧師說我愛學業勝過愛神，不配進天國。" },
+      { session: "第4次會面：認知三角 劇本", type: "counsellor", text: "那妳怎麼看待這句話呢？妳認同嗎？" },
+      { session: "第4次會面：認知三角 劇本", type: "alice", text: "我覺得這可能是真的，我確實為了讀書推掉了事奉，我是一個「愛學業勝過愛神，不配進天國」的人。" },
+      { session: "第4次會面：認知三角 劇本", type: "counsellor", text: "這就是妳在三角形中最重要的「想法」。現在，請妳回想一下，當這個想法佔領妳的大腦時，妳的感受是什麼？記得，我會和妳一起面對，妳不是孤單一人。" },
+      { session: "第4次會面：認知三角 劇本", type: "alice", text: "（在紙上寫下） 感受：罪疚感 、恐懼 。" },
+      { session: "第4次會面：認知三角 劇本", type: "counsellor", text: "如果0分是完全沒有罪疚感和恐懼，10分是超級無敵愧疚和害怕，你認為你當下大約幾分？" },
+      { session: "第4次會面：認知三角 劇本", type: "alice", text: "罪疚感 9 分、恐懼 8 分。" },
+      { session: "第4次會面：認知三角 劇本", type: "counsellor", text: "哇！看來你當下非常痛苦。那麼，你當時做了什麼回應這個痛苦呢（行為）？" },
+      { session: "第4次會面：認知三角 劇本", type: "alice", text: "我當時很想哭，闔上書本，不想再溫書了。" },
+      { session: "第4次會面：認知三角 劇本", type: "counsellor", text: "偵探 Alice，我們完成這個情境的「認知三角」了。讓我們用放大鏡看看這個想法。妳覺得，是什麼原因讓你能夠進天國？" },
+      { session: "第4次會面：認知三角 劇本", type: "alice", text: "（沉默了很久，手指不安地攪動）以前主日學說是耶穌的恩典……但自從那天在辦公室被牧師那樣說之後，我覺得如果不夠火熱、不夠順服，上帝就會對我關上大門。" },
+      { session: "第4次會面：認知三角 劇本", type: "counsellor", text: "我明白，當權威人士用嚴厲的話語指責妳時，原本溫暖的信仰就變成了恐懼的枷鎖。但我們來當個理性的偵探：聖經裡有沒有說過，進天國的條件是「事奉時數」或「學業成績」？" },
+      { session: "第4次會面：認知三角 劇本", type: "alice", text: "……好像沒有。聖經說只要相信耶穌。" },
+      { session: "第4次會面：認知三角 劇本", type: "counsellor", text: "沒錯！所以你抓到腦海當中的犯人了，就是認為自己「為專心讀書而不服事，就不配進天國」這個想法。我們要再次使用「認知三角」工具來看這個情境，如果用另一個想法來想「專心讀書」這件事，妳會有什麼新想法呢？" },
+      { session: "第4次會面：認知三角 劇本", type: "alice", text: "或許……上帝給我聰明智慧去讀書，是為了讓我以後能用專業去幫助人？" },
+      { session: "第4次會面：認知三角 劇本", type: "counsellor", text: "太棒了！這就是一個非常強大的「替代想法」。那我們把替代想法寫在三角形旁邊：「上帝給我聰明智慧去讀書，是為了讓我以後能用專業去幫助人」。因為認真讀書，也是妳服事上帝、榮耀上帝的一種方式。" },
+      { session: "第4次會面：認知三角 劇本", type: "action", text: "— Alice寫字 —" },
+      { session: "第4次會面：認知三角 劇本", type: "counsellor", text: "如果使用「替代想法」來重新思考這個情境，你認為罪疚感和恐懼感會是幾分？" },
+      { session: "第4次會面：認知三角 劇本", type: "alice", text: "罪疚感和恐懼感好像變成 4 分了。" },
+      { session: "第4次會面：認知三角 劇本", type: "counsellor", text: "這就是認知三角的力量！當想法變得更準確，妳的感受也會跟著改變。那麼你現在覺得心情如何？" },
+      { session: "第4次會面：認知三角 劇本", type: "alice", text: "我的心似乎變得比較輕鬆了！" },
+      { session: "第4次會面：認知三角 劇本", type: "action", text: "— 第4次會面角色扮演結束 —" },
+
+      // 第7次會面
+      { session: "第4次會面：認知三角 劇本", type: "action", text: "— 第7次會面角色扮演開始 —" },
+      { session: "第7次會面：創傷的敍述第二部分 劇本", type: "counsellor", text: "之前你用日記的方式敍述了你的經歷，我也從日記中發現你經常提到牧師對你說「愛讀書勝過事奉，是不夠愛主」這句。這句話似乎對你來說很困擾？" },
+      { session: "第7次會面：創傷的敍述第二部分 劇本", type: "alice", text: "對。這句話好像一張膠紙，黏在我的腦海中！" },
+      { session: "第7次會面：創傷的敍述第二部分 劇本", type: "counsellor", text: "現在請你試試想象：如果你有一個好朋友，她也因這個想法而困擾、受傷，你會如何幫助她？" },
+      { session: "第7次會面：創傷的敍述第二部分 劇本", type: "alice", text: "（ 沉思了一會兒）我會告訴她讀書也是神給她的職分！我媽媽曾說過，學生的責任就是好好學習。如果我能用神給我的聰明去讀書，這也是一種榮耀祂的方式！" },
+      { session: "第7次會面：創傷的敍述第二部分 劇本", type: "counsellor", text: "太棒了！這是個正確想法！除了那個不夠愛主的想法，你在日記中也常常重複牧師在辦公室說過：「拒絕事奉，一定不能進天國」，對於這個想法，你會怎樣跟你的朋友說？" },
+      { session: "第7次會面：創傷的敍述第二部分 劇本", type: "alice", text: "我 ⋯⋯ 我會問她說：「是否只有侍奉的人才算是愛神呢？」" },
+      { session: "第7次會面：創傷的敍述第二部分 劇本", type: "counsellor", text: "如果你的朋友反駁你說：「牧師說的話，應該不會錯！」你會怎樣回應她？" },
+      { session: "第7次會面：創傷的敍述第二部分 劇本", type: "alice", text: "我會告訴她，牧師也是人，也會說錯話。然後我會跟她說「如果妳現在是一個病人，上帝會因為妳沒去事奉就說妳不愛祂嗎？」" },
+      { session: "第7次會面：創傷的敍述第二部分 劇本", type: "counsellor", text: "Alice，你的新想法非常好，我相信能夠幫助到你的朋友重新思考這個想法。Alice，我知道你從小上教會，你覺得「上帝對我們的愛」跟「我們個人的行為」有沒有關係？" },
+      { session: "第7次會面：創傷的敍述第二部分 劇本", type: "alice", text: "我記得主日學教我們「上帝對我們的愛是無條件的，祂很寶貝我們每一個人」。" },
+      { session: "第7次會面：創傷的敍述第二部分 劇本", type: "counsellor", text: "你說的沒錯！所以，我們可以試著建立另一個替代想法：「上帝的愛是無條件的，祂寶貝我們。祂會看見我的受傷與疲累，而不是勉強我去做工。」" },
+      { session: "第7次會面：創傷的敍述第二部分 劇本", type: "alice", text: "我知道聖經說上帝無條件愛我，但上次在辦公室的談話，讓我覺得所有的牧師和輔導都跟我們教會一樣，只會關心教會的運作，不關心人的感受。" },
+      { session: "第7次會面：創傷的敍述第二部分 劇本", type: "counsellor", text: "聽起來他們的作法，讓你很受傷，而且你在日記中也反覆提到這件事。" },
+      { session: "第7次會面：創傷的敍述第二部分 劇本", type: "alice", text: "對啊，讓我很難過，他們的話也令我對上帝的愛感到懷疑。" },
+      { session: "第7次會面：創傷的敍述第二部分 劇本", type: "counsellor", text: "那你有沒有認識或聽過其他教會領袖關心弟兄姊妹的經歷或事件呢？" },
+      { session: "第7次會面：創傷的敍述第二部分 劇本", type: "alice", text: "嗯……我前陣子看到一個新聞講Bill Wilson牧師為了一群兒童而搭飛機去戰場，而且自己還受到槍擊。他很愛神，也很關心人！" },
+      { session: "第7次會面：創傷的敍述第二部分 劇本", type: "counsellor", text: "Alice，當你聽到 Bill Wilson牧師的經歷時，你有什麼想法？" },
+      { session: "第7次會面：創傷的敍述第二部分 劇本", type: "alice", text: "其實不是每個牧師、教會領袖都只關心自己的事，也有人會關心其他人。" },
+      { session: "第7次會面：創傷的敍述第二部分 劇本", type: "alice", text: "但 …… （低下頭）我還是覺得，如果當初我夠順服、不要去爭取暫停服事，或許牧師就不會那樣罵我，我也不會離開教會，這一切是不是都是我的錯？" },
+      { session: "第7次會面：創傷的敍述第二部分 劇本", type: "counsellor", text: "其實每件事的結果，也是因為不同的因素和人促成的。而在 TF - CBT 治療中，有一個叫做「責任餅圖」的工具，它主要是幫助人去冷靜釐清每件事背後涉及的人，以及每個人該負的責任比例，避免人將責任全部推給自己，造成心理壓力。" },
+      { session: "第7次會面：創傷的敍述第二部分 劇本", type: "counsellor", text: "那麼在你「受傷害而不敢回教會」的這件事，你覺得有什麼人需要負責任？" },
+      { session: "第7次會面：創傷的敍述第二部分 劇本", type: "alice", text: "( 開始陷入苦思）我覺得牧師、輔導、團契主席、我自己都有責任。" },
+      { session: "第7次會面：創傷的敍述第二部分 劇本", type: "counsellor", text: "我給你一張紙，你先畫－個圓形，然後在圓形上畫上每個人需要負責任的比例。" },
+      { session: "第7次會面：創傷的敍述第二部分 劇本", type: "action", text: "— Alice 思考了約2分鐘後，終於在紙上的圓形畫了 —" },
+      { session: "第7次會面：創傷的敍述第二部分 劇本", type: "counsellor", text: "你有什麼想法？" },
+      { session: "第7次會面：創傷的敍述第二部分 劇本", type: "alice", text: "我覺得我自己有70%責任，牧師要負 10% 責任，輔導負 10% 責任，而團契主席要負10%責任。" },
+      { session: "第7次會面：創傷的敍述第二部分 劇本", type: "counsellor", text: "你自己的責任最大？" },
+      { session: "第7次會面：創傷的敍述第二部分 劇本", type: "alice", text: "對！因為我拒絕事奉，才引致事件。" },
+      { session: "第7次會面：創傷的敍述第二部分 劇本", type: "counsellor", text: "那你有沒有認識的人曾經拒絕事奉，但他們沒有受傷害和離開教會？" },
+      { session: "第7次會面：創傷的敍述第二部分 劇本", type: "alice", text: "有……他們現在還是穩定聚會。" },
+      { session: "第7次會面：創傷的敍述第二部分 劇本", type: "counsellor", text: "你覺得你跟他們有什麼不同？" },
+      { session: "第7次會面：創傷的敍述第二部分 劇本", type: "alice", text: "因為我們在不同教會，每個牧者和輔導的作法不一樣。 他們的牧師會以溫柔包容的心去引導弟兄姊妹。" },
+      { session: "第7次會面：創傷的敍述第二部分 劇本", type: "counsellor", text: "那麼你覺得牧師和輔導不同的作法，是不是會影響你「受傷害而不敢回教會」這件事的結果？ 你試想想， 如果你是在你朋友的教會，你覺得你「拒絕服事」的結果會不會不一樣？" },
+      { session: "第7次會面：創傷的敍述第二部分 劇本", type: "alice", text: "應該會的！" },
+      { session: "第7次會面：創傷的敍述第二部分 劇本", type: "counsellor", text: "如果這樣，「不敢回教會」的責任劃分會不會有所改變？那麼請你重新再畫一個。" },
+      { session: "第7次會面：創傷的敍述第二部分 劇本", type: "alice", text: "（開始在紙上畫圖 ) 我覺得我的事件，牧師要負40%責任、團契輔導和主席各負20%責任，我自己也有20%責任。" },
+      { session: "第7次會面：創傷的敍述第二部分 劇本", type: "counsellor", text: "當妳這樣想的時候，妳心裡的感受如何？" },
+      { session: "第7次會面：創傷的敍述第二部分 劇本", type: "alice", text: "心口沒那麼悶了。（深吸一口氣）我從來沒想過可以不用背起所有責任 ……" },
+      { session: "第4次會面：認知三角 劇本", type: "action", text: "— 第7次會面角色扮演結束 —" }
+    ];
+
+    let currentIndex = 0;
+
+    // 取得 DOM 元素
+    const sessionTitleEle = document.getElementById('session-title');
+    const progressBarEle = document.getElementById('progress-bar');
+    const contentContainer = document.getElementById('content-container');
+    const btnPrev = document.getElementById('btn-prev');
+    const btnNext = document.getElementById('btn-next');
+    const progressTextEle = document.getElementById('progress-text');
+
+    // 圖示 SVG 定義
+    const icons = {
+      user: `<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M19 21v-2a4 4 0 0 0-4-4H9a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>`,
+      userCircle: `<svg xmlns="http://www.w3.org/2000/svg" width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><circle cx="12" cy="10" r="3"/><path d="M7 20.662V19a2 2 0 0 1 2-2h6a2 2 0 0 1 2 2v1.662"/></svg>`,
+      info: `<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><line x1="12" y1="16" x2="12" y2="12"/><line x1="12" y1="8" x2="12.01" y2="8"/></svg>`
+    };
+
+    // 渲染畫面功能
+    function renderStep() {
+      const step = scriptData[currentIndex];
+      
+      // 更新進度和頂部資訊
+      sessionTitleEle.textContent = step.session;
+      const progressPercent = ((currentIndex + 1) / scriptData.length) * 100;
+      progressBarEle.style.width = `${progressPercent}%`;
+      progressTextEle.textContent = `進度 ${currentIndex + 1} / ${scriptData.length}`;
+
+      // 重設動畫狀態 (藉由移除再添加 class)
+      contentContainer.classList.remove('animate-fade-in');
+      void contentContainer.offsetWidth; // 觸發 reflow 讓動畫重置
+      contentContainer.classList.add('animate-fade-in');
+
+      // 根據 type 生成 HTML
+      let htmlContent = '';
+      if (step.type === 'counsellor') {
+        htmlContent = `
+          <div class="flex items-end gap-4 max-w-[85%]">
+            <div class="flex flex-col items-center gap-1 shrink-0">
+              <div class="w-12 h-12 bg-indigo-100 rounded-full flex items-center justify-center text-indigo-600 shadow-sm border-2 border-white">
+                ${icons.user}
+              </div>
+              <span class="text-xs font-bold text-slate-500">輔導員</span>
+            </div>
+            <div class="bg-indigo-50 border border-indigo-100 px-6 py-4 rounded-2xl rounded-bl-none shadow-sm text-lg leading-relaxed text-indigo-900">
+              ${step.text}
+            </div>
+          </div>
+        `;
+      } else if (step.type === 'alice') {
+        htmlContent = `
+          <div class="flex items-end gap-4 max-w-[85%] self-end flex-row-reverse">
+            <div class="flex flex-col items-center gap-1 shrink-0">
+              <div class="w-12 h-12 bg-rose-100 rounded-full flex items-center justify-center text-rose-600 shadow-sm border-2 border-white">
+                ${icons.userCircle}
+              </div>
+              <span class="text-xs font-bold text-slate-500">Alice</span>
+            </div>
+            <div class="bg-rose-50 border border-rose-100 px-6 py-4 rounded-2xl rounded-br-none shadow-sm text-lg leading-relaxed text-rose-900">
+              ${step.text}
+            </div>
+          </div>
+        `;
+      } else if (step.type === 'action') {
+        htmlContent = `
+          <div class="flex flex-col items-center justify-center self-center max-w-[80%] my-8">
+            <div class="bg-amber-50 border border-amber-200 text-amber-800 px-8 py-5 rounded-2xl shadow-sm text-center font-medium tracking-wide flex items-center gap-3">
+              <div class="text-amber-500 shrink-0">${icons.info}</div>
+              <span>${step.text}</span>
+            </div>
+          </div>
+        `;
+      }
+
+      contentContainer.innerHTML = htmlContent;
+
+      // 更新按鈕狀態
+      updateButtons();
+    }
+
+    function updateButtons() {
+      // 上一頁按鈕
+      if (currentIndex === 0) {
+        btnPrev.className = "flex items-center gap-2 px-5 py-2.5 rounded-lg font-medium transition-colors text-slate-300 cursor-not-allowed";
+        btnPrev.disabled = true;
+      } else {
+        btnPrev.className = "flex items-center gap-2 px-5 py-2.5 rounded-lg font-medium transition-colors text-indigo-600 bg-indigo-50 hover:bg-indigo-100 active:bg-indigo-200 cursor-pointer";
+        btnPrev.disabled = false;
+      }
+
+      // 下一頁按鈕
+      if (currentIndex === scriptData.length - 1) {
+        btnNext.className = "flex items-center gap-2 px-5 py-2.5 rounded-lg font-medium transition-colors text-slate-300 cursor-not-allowed";
+        btnNext.disabled = true;
+      } else {
+        btnNext.className = "flex items-center gap-2 px-5 py-2.5 rounded-lg font-medium transition-colors text-white bg-indigo-600 hover:bg-indigo-700 active:bg-indigo-800 shadow-md cursor-pointer";
+        btnNext.disabled = false;
+      }
+    }
+
+    // 事件監聽
+    function handleNext() {
+      if (currentIndex < scriptData.length - 1) {
+        currentIndex++;
+        renderStep();
+      }
+    }
+
+    function handlePrev() {
+      if (currentIndex > 0) {
+        currentIndex--;
+        renderStep();
+      }
+    }
+
+    btnNext.addEventListener('click', handleNext);
+    btnPrev.addEventListener('click', handlePrev);
+
+    document.addEventListener('keydown', (e) => {
+      if (e.key === 'ArrowRight') handleNext();
+      else if (e.key === 'ArrowLeft') handlePrev();
+    });
+
+    // 初始化渲染第一頁
+    renderStep();
+
+  </script>
+</body>
+</html>
